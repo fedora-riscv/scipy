@@ -2,8 +2,8 @@
 
 Summary: Scipy: array processing for numbers, strings, records, and objects
 Name: scipy
-Version: 0.5.1
-Release: 4%{?dist}.1
+Version: 0.5.2
+Release: 1%{?dist}
 
 Group: Development/Libraries
 License: BSD
@@ -53,8 +53,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Tue Dec  12 2006 Jef Spaleta <jspaleta@gmail.com> - 0.5.1-4.fc6.1
-- Bumped for fc6 build
+* Wed Feb 21 2007 Jef Spaleta <jspaleta@gmail.com> - 0.5.2-1
+- Update for new upstream release
+
+* Mon Dec  11 2006 Jef Spaleta <jspaleta@gmail.com> - 0.5.1-5
+- Bump for rebuild against python 2.5 in devel tree
 
 * Sun Dec  3 2006 Jef Spaleta <jspaleta@gmail.com> - 0.5.1-4
 - Minor adjustments to specfile for packaging guidelines. 
