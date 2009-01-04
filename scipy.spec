@@ -1,14 +1,14 @@
 %define python_sitearch %(%{__python} -c 'from distutils import sysconfig; print sysconfig.get_python_lib(1)')
-
+%define betaversion 0.7.0b1
 Summary: Scipy: Scientific Tools for Python
 Name: scipy
-Version: 0.6.0
-Release: 7%{?dist}
+Version: 0.7.0
+Release: 0.1.b1%{?dist}
 
 Group: Development/Libraries
 License: BSD and LGPLv2+
 Url: http://www.scipy.org
-Source0: http://prdownloads.sourceforge.net/scipy/%{name}-%{version}.tar.gz
+Source0: http://prdownloads.sourceforge.net/scipy/%{name}-%{betaversion}.tar.gz
 # Missing setup.py files which control the build of this module
 # These should be removed as soon as upstream pushes a release with this fixed
 Source1: stsci_image_setup.py
@@ -18,6 +18,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires: numpy, python-devel
 BuildRequires: fftw-devel, blas-devel, lapack-devel, ufsparse-devel
+BuildRequires: atlas-devel
 BuildRequires: gcc-gfortran, swig
 Requires: numpy, python
 
@@ -34,8 +35,8 @@ use, but powerful enough to be depended upon by some of the world's
 leading scientists and engineers.
 
 
-%prep
-%setup -q
+%prep 
+%setup -q -n %{name}-%{betaversion}
 cat > site.cfg << EOF
 [amd]
 library_dirs = %{_libdir}
@@ -52,12 +53,12 @@ cp %{SOURCE1} scipy/stsci/image/setup.py
 cp %{SOURCE2} scipy/stsci/convolve/setup.py
 
 %build
-env CFLAGS="$RPM_OPT_FLAGS" ATLAS=%{_libdir} FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} python setup.py config_fc --fcompiler=gnu95 --noarch build
+env CFLAGS="$RPM_OPT_FLAGS" ATLAS=%{_libdir}/atlas FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} python setup.py config_fc --fcompiler=gnu95 --noarch build
 
 
 %install
 rm -rf $RPM_BUILD_ROOT
-env CFLAGS="$RPM_OPT_FLAGS" ATLAS=%{_libdir} FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} python setup.py install --root=$RPM_BUILD_ROOT
+env CFLAGS="$RPM_OPT_FLAGS" ATLAS=%{_libdir}/atlas FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} python setup.py install --root=$RPM_BUILD_ROOT
 
 
 %clean
@@ -73,6 +74,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Jan 03 2009  Jef Spaleta <jspaleta@fedoraproject.org> - 0.7.0-0.1.b1.fc10
+- Update to latest beta to fix bug 478435
+
 * Fri Oct 03 2008 Jef Spaleta <jspaleta@fedoraproject.org> - 0.6.0-7
 - fix the stsci fix
 
