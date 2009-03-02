@@ -2,7 +2,7 @@
 Summary: Scipy: Scientific Tools for Python
 Name: scipy
 Version: 0.7.0
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 Group: Development/Libraries
 License: BSD and LGPLv2+
@@ -12,6 +12,7 @@ Source0: http://prdownloads.sourceforge.net/scipy/%{name}-%{version}.tar.gz
 # These should be removed as soon as upstream pushes a release with this fixed
 Source1: stsci_image_setup.py
 Source2: stsci_convolve_setup.py
+Patch0: stsci_image_syntax.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -36,6 +37,7 @@ leading scientists and engineers.
 
 %prep 
 %setup -q -n %{name}-%{version}
+%patch0 -p0
 cat > site.cfg << EOF
 [amd]
 library_dirs = %{_libdir}
@@ -73,6 +75,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Mar 1  2009 Jef Spaleta <jspaleta@fedoraproject.org> - 0.7.0-2
+- Patch for stsci image function syntax fix.
+
 * Thu Feb 26 2009 Jef Spaleta <jspaleta@fedoraproject.org> - 0.7.0-1
 - Update to final 0.7 release
 

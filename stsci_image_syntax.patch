@@ -1,0 +1,16 @@
+--- scipy/stsci/image/lib/_image.py	2008-11-24 10:52:40.000000000 +0100
++++ scipy/stsci/image/lib/_image.py	2009-02-26 16:43:44.000000000 +0100
+@@ -1,5 +1,5 @@
+ import numpy as np
+-import scipy.stsci.convolve
++import scipy.stsci.convolve as convolve
+ import scipy.stsci.convolve._correlate as _correlate
+ 
+ def _translate(a, dx, dy, output=None, mode="nearest", cval=0.0):
+@@ -55,4 +55,4 @@
+     if output is not None:
+         output._copyFrom(np.rot90(output, -rotation%4))
+     else:
+-        return np.rot90(d, -rotation % 4).astype(a.type())
++        return np.rot90(d, -rotation % 4).astype(a.dtype)
+
