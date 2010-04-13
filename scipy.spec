@@ -2,7 +2,7 @@
 Summary: Scipy: Scientific Tools for Python
 Name: scipy
 Version: 0.7.1
-Release: 2%{?dist}
+Release: 3%{?dist}
 
 Group: Development/Libraries
 License: BSD and LGPLv2+
@@ -76,7 +76,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Thu Dec 10 2009 Jef Spaleta <jspaleta@fedoraproject.org> - 0.7.1-2
+* Mon Apr 11 2010 Jef Spaleta <jspaleta@fedoraproject.org> - 0.7.1-3
+- Bump for rebuild against numpy 1.3 
+
+* Thu Apr  1 2010 Jef Spaleta <jspaleta@fedoraproject.org> - 0.7.1-2
 - Bump for rebuild against numpy 1.4.0 
 
 * Thu Dec 10 2009 Jon Ciesla <limb@jcomserv.net> - 0.7.1-1
