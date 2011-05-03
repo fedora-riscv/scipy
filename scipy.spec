@@ -2,7 +2,7 @@
 Summary: Scipy: Scientific Tools for Python
 Name: scipy
 Version: 0.7.2
-Release: 4%{?dist}
+Release: 5%{?dist}
 
 Group: Development/Libraries
 License: BSD and LGPLv2+
@@ -17,6 +17,7 @@ Patch1: scipy_gcc43.patch
 # Backport of python-2.7 build fixes upstream
 Patch2: scipy-py27-backport.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+ExcludeArch: ppc64
 
 BuildRequires: numpy, python-devel,f2py
 BuildRequires: fftw-devel, blas-devel, lapack-devel, ufsparse-devel
@@ -86,6 +87,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue May 3 2011 Orion Poplawski <orion@cora.nwra.com> - 0.7.2-5
+- ExcludeArch ppc64 as tests fail there
+
 * Fri Apr 1 2011 Orion Poplawski <orion@cora.nwra.com> - 0.7.2-4
 - Add %%check to run unit tests
 
