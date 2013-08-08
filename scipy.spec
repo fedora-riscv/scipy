@@ -8,16 +8,20 @@
 Summary: Scipy: Scientific Tools for Python
 Name: scipy
 Version: 0.12.0
-Release: 3%{?dist}
+Release: 4%{?dist}
 
 Group: Development/Libraries
-License: BSD and LGPLv2+
+# BSD -- whole package except:
+# Boost -- scipy/special/cephes/scipy_iv.c
+# Public Domain -- scipy/odr/__odrpack.c
+License: BSD and Boost and Public Domain
 Url: http://www.scipy.org
 Source0: http://downloads.sourceforge.net/scipy/%{name}-%{version}.tar.gz
 # Fix definition on gerqf that caused test segfault
 Patch0:  scipy-gerqf.patch
+Patch1:  use-argument-build_dir.patch
 # Use system arpack
-Patch1:  scipy-arpack.patch
+Patch2:  scipy-arpack.patch
 
 BuildRequires: numpy, python-devel,f2py
 BuildRequires: fftw-devel, blas-devel, lapack-devel, suitesparse-devel
@@ -66,8 +70,9 @@ leading scientists and engineers.
 %prep
 %setup -q
 %patch0 -p1 -b .gerqf
+%patch1 -p1
 %define _default_patch_fuzz 2
-%patch1 -p1 -b .arpack
+%patch2 -p1 -b .arpack
 rm -r scipy/sparse/linalg/eigen/arpack/ARPACK
 cat > site.cfg << EOF
 
@@ -146,9 +151,16 @@ rm -rf $RPM_BUILD_ROOT
 %endif # with_python3
 
 %changelog
+* Sun Aug 04 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.12.0-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
+
 * Wed May 15 2013 Orion Poplawski <orion@cora.nwra.com> - 0.12.0-3
 - Remove old ufsparse references, use suitesparse
 - Spec cleanup
+- Tue Jul 30 2013 Tomas Tomecek <ttomecek@redhat.com>:
+ - Fix rpmlint warnings
+ - License update
+ - Add patch to use build_dir argument in build_extension
 
 * Mon Apr 15 2013 Orion Poplawski <orion@cora.nwra.com> - 0.12.0-2
 - Add patch to fix segfaul in test of sgeqrf
@@ -210,20 +222,20 @@ rm -rf $RPM_BUILD_ROOT
 * Wed Feb 09 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.7.2-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
 
-* Fri Jul 31 2010 Toshio Kuratomi <toshio@fedoraproject.org> - 0.7.2-3
+* Sat Jul 31 2010 Toshio Kuratomi <toshio@fedoraproject.org> - 0.7.2-3
 - Fix scipy build on python-2.7
 
 * Thu Jul 22 2010 David Malcolm <dmalcolm@redhat.com> - 0.7.2-2
 - Rebuilt for https://fedoraproject.org/wiki/Features/Python_2.7/MassRebuild
 
 * Thu Jul 1 2010 Jef Spaleta <jspaleta@fedoraproject.org> - 0.7.2-1
-- New upstream release 
+- New upstream release
 
-* Mon Apr 11 2010 Jef Spaleta <jspaleta@fedoraproject.org> - 0.7.1-3
-- Bump for rebuild against numpy 1.3 
+* Sun Apr 11 2010 Jef Spaleta <jspaleta@fedoraproject.org> - 0.7.1-3
+- Bump for rebuild against numpy 1.3
 
 * Thu Apr  1 2010 Jef Spaleta <jspaleta@fedoraproject.org> - 0.7.1-2
-- Bump for rebuild against numpy 1.4.0 
+- Bump for rebuild against numpy 1.4.0
 
 * Thu Dec 10 2009 Jon Ciesla <limb@jcomserv.net> - 0.7.1-1
 - Update to 0.7.1.
@@ -305,7 +317,7 @@ rm -rf $RPM_BUILD_ROOT
 - Bump for rebuild against python 2.5 in devel tree
 
 * Sun Dec  3 2006 Jef Spaleta <jspaleta@gmail.com> - 0.5.1-4
-- Minor adjustments to specfile for packaging guidelines. 
+- Minor adjustments to specfile for packaging guidelines.
 - Changed buildrequires fftw version 3  from fftw2
 
 * Sat Dec  2 2006 Jef Spaleta <jspaleta@gmail.com> - 0.5.1-2
