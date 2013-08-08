@@ -16,9 +16,12 @@ Url: http://www.scipy.org
 Source0: http://downloads.sourceforge.net/scipy/%{name}-%{version}.tar.gz
 # Fix definition on gerqf that caused test segfault
 Patch0:  scipy-gerqf.patch
+# Use system arpack
+Patch1:  scipy-arpack.patch
 
 BuildRequires: numpy, python-devel,f2py
 BuildRequires: fftw-devel, blas-devel, lapack-devel, suitesparse-devel
+BuildRequires: arpack-devel
 BuildRequires: atlas-devel
 BuildRequires: gcc-gfortran, swig
 Requires: numpy, python,f2py
@@ -63,6 +66,9 @@ leading scientists and engineers.
 %prep
 %setup -q
 %patch0 -p1 -b .gerqf
+%define _default_patch_fuzz 2
+%patch1 -p1 -b .arpack
+rm -r scipy/sparse/linalg/eigen/arpack/ARPACK
 cat > site.cfg << EOF
 
 [amd]
@@ -74,6 +80,9 @@ amd_libs = amd
 library_dirs = %{_libdir}
 include_dirs = /usr/include/suitesparse
 umfpack_libs = umfpack
+
+[arpack]
+libraries = arpack
 EOF
 
 
