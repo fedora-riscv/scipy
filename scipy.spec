@@ -3,12 +3,13 @@
 Summary: Scipy: Scientific Tools for Python
 Name: scipy
 Version: 0.6.0
-Release: 6%{?dist}
+Release: 7%{?dist}
 
 Group: Development/Libraries
 License: BSD and LGPLv2+
 Url: http://www.scipy.org
 Source0: http://prdownloads.sourceforge.net/scipy/%{name}-%{version}.tar.gz
+Patch0: scipy-CVE-2013-4251.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -32,6 +33,7 @@ leading scientists and engineers.
 
 %prep
 %setup -q
+%patch0 -p1 -b .CVE-2013-4251
 cat > site.cfg << EOF
 [amd]
 library_dirs = %{_libdir}
@@ -53,6 +55,12 @@ rm -rf $RPM_BUILD_ROOT
 env CFLAGS="$RPM_OPT_FLAGS" ATLAS=%{_libdir} FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} python setup.py install --root=$RPM_BUILD_ROOT
 
 
+%check
+mkdir test
+cd test
+PYTHONPATH=$RPM_BUILD_ROOT%{python_sitearch} python -c "import scipy; scipy.test('full')"
+
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -65,6 +73,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Oct 14 2013 Orion Poplawski <orion@cora.nwra.com> -0.6.0-7
+- Add patch for CVE-2013-4251 (bug #1018353)
+
 * Wed May 7 2008 Jef Spaleta <jspaleta@fedoraproject.org> - 0.6.0-6
 - rebuild for EL-5
 
