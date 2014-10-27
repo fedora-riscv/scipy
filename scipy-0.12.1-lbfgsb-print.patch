@@ -1,0 +1,27 @@
+From 759988bdecafe3a0fe55f06eb5e6a4b97c4fc232 Mon Sep 17 00:00:00 2001
+From: Pauli Virtanen <pav@iki.fi>
+Date: Fri, 29 Mar 2013 19:15:53 +0200
+Subject: [PATCH] BUG: optimize/lbfgsb: fix a code path printing even when
+ iprint < 0
+
+---
+ scipy/optimize/lbfgsb/lbfgsb.f | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/scipy/optimize/lbfgsb/lbfgsb.f b/scipy/optimize/lbfgsb/lbfgsb.f
+index cc74b74..2406e39 100644
+--- a/scipy/optimize/lbfgsb/lbfgsb.f
++++ b/scipy/optimize/lbfgsb/lbfgsb.f
+@@ -3276,8 +3276,10 @@ subroutine subsm ( n, m, nsub, ind, l, u, nbd, x, d, xp, ws, wy,
+  55   continue
+       if ( dd_p .gt.zero ) then
+          call dcopy( n, xp, 1, x, 1 )
+-         write(6,*) ' Positive dir derivative in projection '
+-         write(6,*) ' Using the backtracking step '
++         if (iprint .ge. 0) then
++            write(6,*) ' Positive dir derivative in projection '
++            write(6,*) ' Using the backtracking step '
++         endif
+       else
+          go to 911
+       endif

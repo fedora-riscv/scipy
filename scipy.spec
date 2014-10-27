@@ -8,7 +8,7 @@
 Summary: Scipy: Scientific Tools for Python
 Name: scipy
 Version: 0.12.1
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 Group: Development/Libraries
 # BSD -- whole package except:
@@ -20,6 +20,8 @@ Source0: http://downloads.sourceforge.net/scipy/%{name}-%{version}.tar.gz
 # Fix definition on gerqf that caused test segfault
 Patch0:  scipy-gerqf.patch
 Patch1:  use-argument-build_dir.patch
+# from https://github.com/scipy/scipy/issues/2261 will be in 0.13.2
+Patch2:  scipy-0.12.1-lbfgsb-print.patch
 
 BuildRequires: numpy, python-devel,f2py
 BuildRequires: fftw-devel, blas-devel, lapack-devel, suitesparse-devel
@@ -68,6 +70,7 @@ leading scientists and engineers.
 %setup -q
 %patch0 -p1 -b .gerqf
 %patch1 -p1
+%patch2 -p1
 cat > site.cfg << EOF
 
 [amd]
@@ -142,6 +145,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif # with_python3
 
 %changelog
+* Mon Oct 27 2014 Thomas Spura <tomspur@fedoraproject.org> - 0.12.1-2
+- Add upstream patch to fix #1047167
+
 * Mon Oct 14 2013 Orion Poplawski <orion@cora.nwra.com> - 0.12.1-1
 - Update to 0.12.1 - fixes CVE-2013-4251 (bug 101351)
 
