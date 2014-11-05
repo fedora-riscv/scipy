@@ -25,3 +25,51 @@ index cc74b74..2406e39 100644
        else
           go to 911
        endif
+From ea96f8697deea203675c44b3d24e427e552c4de7 Mon Sep 17 00:00:00 2001
+From: Evgeni Burovski <evgeni@burovski.me>
+Date: Sun, 16 Feb 2014 01:27:03 +0000
+Subject: [PATCH] MAINT: silence a print in l-bfgs-b
+
+---
+ scipy/optimize/lbfgsb/lbfgsb.f | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/scipy/optimize/lbfgsb/lbfgsb.f b/scipy/optimize/lbfgsb/lbfgsb.f
+index 2406e39..9a92668 100644
+--- a/scipy/optimize/lbfgsb/lbfgsb.f
++++ b/scipy/optimize/lbfgsb/lbfgsb.f
+@@ -783,7 +783,7 @@ subroutine mainlb(n, m, x, l, u, nbd, f, g, factr, pgtol, ws, wy,
+  666  continue
+       call lnsrlb(n,l,u,nbd,x,f,fold,gd,gdold,g,d,r,t,z,stp,dnorm,
+      +            dtd,xstep,stpmx,iter,ifun,iback,nfgv,info,task,
+-     +            boxed,cnstnd,csave,isave(22),dsave(17))
++     +            boxed,cnstnd,csave,isave(22),dsave(17), iprint)
+       if (info .ne. 0 .or. iback .ge. 20) then
+ c          restore the previous iterate.
+          call dcopy(n,t,1,x,1)
+@@ -2450,12 +2450,12 @@ subroutine hpsolb(n, t, iorder, iheap)
+       subroutine lnsrlb(n, l, u, nbd, x, f, fold, gd, gdold, g, d, r, t,
+      +                  z, stp, dnorm, dtd, xstep, stpmx, iter, ifun,
+      +                  iback, nfgv, info, task, boxed, cnstnd, csave,
+-     +                  isave, dsave)
++     +                  isave, dsave, iprint)
+ 
+       character*60     task, csave
+       logical          boxed, cnstnd
+       integer          n, iter, ifun, iback, nfgv, info,
+-     +                 nbd(n), isave(2)
++     +                 nbd(n), isave(2), iprint
+       double precision f, fold, gd, gdold, stp, dnorm, dtd, xstep,
+      +                 stpmx, x(n), l(n), u(n), g(n), d(n), r(n), t(n),
+      +                 z(n), dsave(13)
+@@ -2547,7 +2547,9 @@ subroutine lnsrlb(n, l, u, nbd, x, f, fold, gd, gdold, g, d, r, t,
+          if (gd .ge. zero) then
+ c                               the directional derivative >=0.
+ c                               Line search is impossible.
+-            write(6,*)' ascent direction in projection gd = ', gd
++            if (iprint .ge. 0) then
++                write(6,*)' ascent direction in projection gd = ', gd
++            endif
+             info = -4
+             return
+          endif

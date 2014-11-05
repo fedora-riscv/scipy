@@ -8,7 +8,7 @@
 Summary: Scipy: Scientific Tools for Python
 Name: scipy
 Version: 0.12.1
-Release: 2%{?dist}
+Release: 3%{?dist}
 
 Group: Development/Libraries
 # BSD -- whole package except:
@@ -145,6 +145,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif # with_python3
 
 %changelog
+* Wed Nov  5 2014 Thomas Spura <tomspur@fedoraproject.org> - 0.12.1-3
+- Add another upstream patch to fix #1047167 for another print statement
+
 * Mon Oct 27 2014 Thomas Spura <tomspur@fedoraproject.org> - 0.12.1-2
 - Add upstream patch to fix #1047167
 
