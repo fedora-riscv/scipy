@@ -10,8 +10,8 @@
 
 Summary:    Scientific Tools for Python
 Name:       scipy
-Version:    0.18.0
-Release:    3%{?dist}
+Version:    0.19.0
+Release:    1%{?dist}
 
 Group:      Development/Libraries
 # BSD -- whole package except:
@@ -19,7 +19,7 @@ Group:      Development/Libraries
 # Public Domain -- scipy/odr/__odrpack.c
 License:    BSD and Boost and Public Domain
 Url:        http://www.scipy.org/scipylib/index.html
-Source0:    https://files.pythonhosted.org/packages/source/s/scipy/scipy-%{version}.tar.xz
+Source0:    https://github.com/scipy/scipy/releases/download/v%{version}/scipy-%{version}.tar.xz
 
 BuildRequires: numpy, python2-devel,f2py
 BuildRequires: fftw-devel, blas-devel, lapack-devel, suitesparse-devel
@@ -161,6 +161,9 @@ PYTHONPATH=$RPM_BUILD_ROOT%{python2_sitearch} \
 %endif # with_python3
 
 %changelog
+* Wed Jun 07 2017 Christian Dersch <lupinix@mailbox.org> - 0.19.0-1
+- new version
+
 * Tue Jan 31 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 0.18.0-3
 - Rebuild for libgfortran.so.3
 
