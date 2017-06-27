@@ -10,7 +10,7 @@
 
 Summary:    Scientific Tools for Python
 Name:       scipy
-Version:    0.19.0
+Version:    0.19.1
 Release:    1%{?dist}
 
 Group:      Development/Libraries
@@ -161,6 +161,9 @@ PYTHONPATH=$RPM_BUILD_ROOT%{python2_sitearch} \
 %endif # with_python3
 
 %changelog
+* Tue Jun 27 2017 Christian Dersch <lupinix@mailbox.org> - 0.19.1-1
+- new version
+
 * Wed Jun 07 2017 Christian Dersch <lupinix@mailbox.org> - 0.19.0-1
 - new version
 
