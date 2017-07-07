@@ -11,7 +11,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    0.19.1
-Release:    1%{?dist}
+Release:    2%{?dist}
 
 Group:      Development/Libraries
 # BSD -- whole package except:
@@ -161,6 +161,9 @@ PYTHONPATH=$RPM_BUILD_ROOT%{python2_sitearch} \
 %endif # with_python3
 
 %changelog
+* Fri Jul 07 2017 Igor Gnatenko <ignatenko@redhat.com> - 0.19.1-2
+- Rebuild due to bug in RPM (RHBZ #1468476)
+
 * Tue Jun 27 2017 Christian Dersch <lupinix@mailbox.org> - 0.19.1-1
 - new version
 
