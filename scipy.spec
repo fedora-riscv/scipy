@@ -11,7 +11,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    0.19.1
-Release:    4%{?dist}
+Release:    5%{?dist}
 
 Group:      Development/Libraries
 # BSD -- whole package except:
@@ -23,7 +23,11 @@ Source0:    https://github.com/scipy/scipy/releases/download/v%{version}/scipy-%
 
 BuildRequires: numpy, python2-devel,f2py
 BuildRequires: fftw-devel, blas-devel, lapack-devel, suitesparse-devel
+%ifarch %{openblas_arches}
+BuildRequires: openblas-devel
+%else
 BuildRequires: atlas-devel
+%endif
 BuildRequires: gcc-gfortran, swig
 BuildRequires: qhull-devel
 
@@ -105,14 +109,24 @@ EOF
 %if 0%{?with_python3}
 env CFLAGS="$RPM_OPT_FLAGS" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
-    ATLAS=%{_libdir}/atlas FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
+%ifarch %{openblas_arches}
+    OPENBLAS=%{_libdir}/openblas \
+%else
+    ATLAS=%{_libdir}/atlas \
+%endif
+    FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
     %__python3 setup.py config_fc \
     --fcompiler=gnu95 --noarch build
 %endif # with _python3
 
 env CFLAGS="$RPM_OPT_FLAGS" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
-    ATLAS=%{_libdir}/atlas FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
+%ifarch %{openblas_arches}    
+    OPENBLAS=%{_libdir}/openblas \
+%else    
+    ATLAS=%{_libdir}/atlas \
+%endif
+    FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
     %__python2 setup.py config_fc \
     --fcompiler=gnu95 --noarch build
 
@@ -123,13 +137,23 @@ env CFLAGS="$RPM_OPT_FLAGS" \
 %if 0%{?with_python3}
 env CFLAGS="$RPM_OPT_FLAGS" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
-    ATLAS=%{_libdir}/atlas FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
+%ifarch %{openblas_arches}    
+    OPENBLAS=%{_libdir}/openblas \
+%else    
+    ATLAS=%{_libdir}/atlas \
+%endif
+    FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
     %__python3 setup.py install --root=$RPM_BUILD_ROOT
 %endif # with_python3
 
 env CFLAGS="$RPM_OPT_FLAGS" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
-    ATLAS=%{_libdir}/atlas FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
+%ifarch %{openblas_arches}    
+    OPENBLAS=%{_libdir}/openblas \
+%else    
+    ATLAS=%{_libdir}/atlas \
+%endif
+    FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
     %__python2 setup.py install --root=$RPM_BUILD_ROOT
 
 
@@ -161,6 +185,9 @@ PYTHONPATH=$RPM_BUILD_ROOT%{python2_sitearch} \
 %endif # with_python3
 
 %changelog
+* Wed Oct 04 2017 Christian Dersch <lupinix@mailbox.org> - 0.19.1-5
+- Use openblas where available, to use same as numpy (BZ 1472318)
+
 * Thu Aug 03 2017 Fedora Release Engineering <releng@fedoraproject.org> - 0.19.1-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Binutils_Mass_Rebuild
 
