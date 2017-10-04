@@ -116,7 +116,7 @@ env CFLAGS="$RPM_OPT_FLAGS" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
 %ifarch %{openblas_arches}
 %ifnarch ppc64
-    OPENBLAS=%{_libdir}/openblas \
+    OPENBLAS=%{_libdir} \
 %else
     ATLAS=%{_libdir}/atlas \
 %endif
@@ -132,7 +132,7 @@ env CFLAGS="$RPM_OPT_FLAGS" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
 %ifarch %{openblas_arches}
 %ifnarch ppc64
-    OPENBLAS=%{_libdir}/openblas \
+    OPENBLAS=%{_libdir} \
 %else
     ATLAS=%{_libdir}/atlas \
 %endif
@@ -152,7 +152,7 @@ env CFLAGS="$RPM_OPT_FLAGS" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
 %ifarch %{openblas_arches}
 %ifnarch ppc64
-    OPENBLAS=%{_libdir}/openblas \
+    OPENBLAS=%{_libdir} \
 %else
     ATLAS=%{_libdir}/atlas \
 %endif
@@ -167,7 +167,7 @@ env CFLAGS="$RPM_OPT_FLAGS" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
 %ifarch %{openblas_arches}
 %ifnarch ppc64
-    OPENBLAS=%{_libdir}/openblas \
+    OPENBLAS=%{_libdir} \
 %else
     ATLAS=%{_libdir}/atlas \
 %endif
