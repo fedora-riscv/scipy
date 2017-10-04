@@ -24,7 +24,12 @@ Source0:    https://github.com/scipy/scipy/releases/download/v%{version}/scipy-%
 BuildRequires: numpy, python2-devel,f2py
 BuildRequires: fftw-devel, blas-devel, lapack-devel, suitesparse-devel
 %ifarch %{openblas_arches}
+%ifnarch ppc64
+# prefer atlas on ppc64 big endian
 BuildRequires: openblas-devel
+%else
+BuildRequires: atlas-devel
+%endif
 %else
 BuildRequires: atlas-devel
 %endif
@@ -110,7 +115,11 @@ EOF
 env CFLAGS="$RPM_OPT_FLAGS" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
 %ifarch %{openblas_arches}
+%ifnarch ppc64
     OPENBLAS=%{_libdir}/openblas \
+%else
+    ATLAS=%{_libdir}/atlas \
+%endif
 %else
     ATLAS=%{_libdir}/atlas \
 %endif
@@ -121,11 +130,15 @@ env CFLAGS="$RPM_OPT_FLAGS" \
 
 env CFLAGS="$RPM_OPT_FLAGS" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
-%ifarch %{openblas_arches}    
+%ifarch %{openblas_arches}
+%ifnarch ppc64
     OPENBLAS=%{_libdir}/openblas \
-%else    
+%else
     ATLAS=%{_libdir}/atlas \
 %endif
+%else
+    ATLAS=%{_libdir}/atlas \
+%endif    
     FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
     %__python2 setup.py config_fc \
     --fcompiler=gnu95 --noarch build
@@ -137,22 +150,30 @@ env CFLAGS="$RPM_OPT_FLAGS" \
 %if 0%{?with_python3}
 env CFLAGS="$RPM_OPT_FLAGS" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
-%ifarch %{openblas_arches}    
+%ifarch %{openblas_arches}
+%ifnarch ppc64
     OPENBLAS=%{_libdir}/openblas \
-%else    
+%else
     ATLAS=%{_libdir}/atlas \
 %endif
+%else
+    ATLAS=%{_libdir}/atlas \
+%endif    
     FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
     %__python3 setup.py install --root=$RPM_BUILD_ROOT
 %endif # with_python3
 
 env CFLAGS="$RPM_OPT_FLAGS" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
-%ifarch %{openblas_arches}    
+%ifarch %{openblas_arches}
+%ifnarch ppc64
     OPENBLAS=%{_libdir}/openblas \
-%else    
+%else
     ATLAS=%{_libdir}/atlas \
 %endif
+%else
+    ATLAS=%{_libdir}/atlas \
+%endif    
     FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
     %__python2 setup.py install --root=$RPM_BUILD_ROOT
 
@@ -186,7 +207,7 @@ PYTHONPATH=$RPM_BUILD_ROOT%{python2_sitearch} \
 
 %changelog
 * Wed Oct 04 2017 Christian Dersch <lupinix@mailbox.org> - 0.19.1-5
-- Use openblas where available, to use same as numpy (BZ 1472318)
+- Use openblas where available (except ppc64), to use same as numpy (BZ 1472318)
 
 * Thu Aug 03 2017 Fedora Release Engineering <releng@fedoraproject.org> - 0.19.1-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Binutils_Mass_Rebuild
