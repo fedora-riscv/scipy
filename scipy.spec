@@ -10,8 +10,8 @@
 
 Summary:    Scientific Tools for Python
 Name:       scipy
-Version:    0.19.1
-Release:    5%{?dist}
+Version:    1.0.0
+Release:    1%{?dist}
 
 Group:      Development/Libraries
 # BSD -- whole package except:
@@ -22,6 +22,7 @@ Url:        http://www.scipy.org/scipylib/index.html
 Source0:    https://github.com/scipy/scipy/releases/download/v%{version}/scipy-%{version}.tar.xz
 
 BuildRequires: numpy, python2-devel,f2py
+BuildRequires: python2-pytest
 BuildRequires: fftw-devel, blas-devel, lapack-devel, suitesparse-devel
 %ifarch %{openblas_arches}
 %ifnarch ppc64
@@ -39,7 +40,7 @@ BuildRequires: qhull-devel
 %if 0%{?with_python3}
 BuildRequires:  python3-numpy, python3-devel, python3-f2py
 BuildRequires:  python3-setuptools
-BuildRequires:  python3-nose
+BuildRequires:  python3-pytest
 %endif
 
 %description
@@ -138,7 +139,7 @@ env CFLAGS="$RPM_OPT_FLAGS" \
 %endif
 %else
     ATLAS=%{_libdir}/atlas \
-%endif    
+%endif
     FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
     %__python2 setup.py config_fc \
     --fcompiler=gnu95 --noarch build
@@ -158,7 +159,7 @@ env CFLAGS="$RPM_OPT_FLAGS" \
 %endif
 %else
     ATLAS=%{_libdir}/atlas \
-%endif    
+%endif
     FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
     %__python3 setup.py install --root=$RPM_BUILD_ROOT
 %endif # with_python3
@@ -173,7 +174,7 @@ env CFLAGS="$RPM_OPT_FLAGS" \
 %endif
 %else
     ATLAS=%{_libdir}/atlas \
-%endif    
+%endif
     FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
     %__python2 setup.py install --root=$RPM_BUILD_ROOT
 
@@ -206,6 +207,9 @@ PYTHONPATH=$RPM_BUILD_ROOT%{python2_sitearch} \
 %endif # with_python3
 
 %changelog
+* Thu Oct 26 2017 Thomas Spura <tomspur@fedoraproject.org> - 1.0.0-1
+- update to 1.0.0 and use pytest instead of nose
+
 * Wed Oct 04 2017 Christian Dersch <lupinix@mailbox.org> - 0.19.1-5
 - Use openblas where available (except ppc64), to use same as numpy (BZ 1472318)
 
