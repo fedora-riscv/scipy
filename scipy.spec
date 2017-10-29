@@ -23,6 +23,8 @@ Source0:    https://github.com/scipy/scipy/releases/download/v%{version}/scipy-%
 
 BuildRequires: numpy, python2-devel,f2py
 BuildRequires: python2-pytest
+BuildRequires: python2-pytest-xdist
+BuildRequires: python2-pytest-timeout
 BuildRequires: fftw-devel, blas-devel, lapack-devel, suitesparse-devel
 %ifarch %{openblas_arches}
 %ifnarch ppc64
@@ -41,6 +43,8 @@ BuildRequires: qhull-devel
 BuildRequires:  python3-numpy, python3-devel, python3-f2py
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-pytest
+BuildRequires:  python3-pytest-xdist
+BuildRequires:  python3-pytest-timeout
 %endif
 
 %description
@@ -184,13 +188,13 @@ env CFLAGS="$RPM_OPT_FLAGS" \
 mkdir test3
 cd test3
 PYTHONPATH=$RPM_BUILD_ROOT%{python3_sitearch} \
-    %__python3 -c "import scipy; scipy.test('full', verbose=2)" || :
+    %__python3 -c "import scipy; scipy.test('full', verbose=2, extra_argv=['-n $(getconf _NPROCESSORS_ONLN)', '--timeout=300'])" || :
 %endif # with_python3
 
 mkdir test2
 cd test2
 PYTHONPATH=$RPM_BUILD_ROOT%{python2_sitearch} \
-    %__python2 -c "import scipy; scipy.test('full', verbose=2)" || :
+    %__python2 -c "import scipy; scipy.test('full', verbose=2, extra_argv=['-n $(getconf _NPROCESSORS_ONLN)', '--timeout=300'])" || :
 
 
 %files -n python2-scipy
@@ -209,6 +213,7 @@ PYTHONPATH=$RPM_BUILD_ROOT%{python2_sitearch} \
 %changelog
 * Thu Oct 26 2017 Thomas Spura <tomspur@fedoraproject.org> - 1.0.0-1
 - update to 1.0.0 and use pytest instead of nose
+- use timeout during parallel %%check
 
 * Wed Oct 04 2017 Christian Dersch <lupinix@mailbox.org> - 0.19.1-5
 - Use openblas where available (except ppc64), to use same as numpy (BZ 1472318)
