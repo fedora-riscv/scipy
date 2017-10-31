@@ -11,7 +11,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.0.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 
 Group:      Development/Libraries
 # BSD -- whole package except:
@@ -27,12 +27,7 @@ BuildRequires: python2-pytest-xdist
 BuildRequires: python2-pytest-timeout
 BuildRequires: fftw-devel, blas-devel, lapack-devel, suitesparse-devel
 %ifarch %{openblas_arches}
-%ifnarch ppc64
-# prefer atlas on ppc64 big endian
 BuildRequires: openblas-devel
-%else
-BuildRequires: atlas-devel
-%endif
 %else
 BuildRequires: atlas-devel
 %endif
@@ -112,6 +107,12 @@ amd_libs = amd
 library_dirs = %{_libdir}
 include_dirs = /usr/include/suitesparse
 umfpack_libs = umfpack
+
+%ifarch %{openblas_arches}
+[openblas]
+library_dirs = %{_libdir}
+openblas_libs = openblasp
+%endif
 EOF
 
 
@@ -120,11 +121,7 @@ EOF
 env CFLAGS="$RPM_OPT_FLAGS" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
 %ifarch %{openblas_arches}
-%ifnarch ppc64
     OPENBLAS=%{_libdir} \
-%else
-    ATLAS=%{_libdir}/atlas \
-%endif
 %else
     ATLAS=%{_libdir}/atlas \
 %endif
@@ -136,11 +133,7 @@ env CFLAGS="$RPM_OPT_FLAGS" \
 env CFLAGS="$RPM_OPT_FLAGS" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
 %ifarch %{openblas_arches}
-%ifnarch ppc64
     OPENBLAS=%{_libdir} \
-%else
-    ATLAS=%{_libdir}/atlas \
-%endif
 %else
     ATLAS=%{_libdir}/atlas \
 %endif
@@ -156,11 +149,7 @@ env CFLAGS="$RPM_OPT_FLAGS" \
 env CFLAGS="$RPM_OPT_FLAGS" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
 %ifarch %{openblas_arches}
-%ifnarch ppc64
     OPENBLAS=%{_libdir} \
-%else
-    ATLAS=%{_libdir}/atlas \
-%endif
 %else
     ATLAS=%{_libdir}/atlas \
 %endif
@@ -171,11 +160,7 @@ env CFLAGS="$RPM_OPT_FLAGS" \
 env CFLAGS="$RPM_OPT_FLAGS" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
 %ifarch %{openblas_arches}
-%ifnarch ppc64
     OPENBLAS=%{_libdir} \
-%else
-    ATLAS=%{_libdir}/atlas \
-%endif
 %else
     ATLAS=%{_libdir}/atlas \
 %endif
@@ -185,16 +170,14 @@ env CFLAGS="$RPM_OPT_FLAGS" \
 
 %check
 %if 0%{?with_python3}
-mkdir test3
-cd test3
-PYTHONPATH=$RPM_BUILD_ROOT%{python3_sitearch} \
-    %__python3 -c "import scipy; scipy.test('full', verbose=2, extra_argv=['-n $(getconf _NPROCESSORS_ONLN)', '--timeout=300'])" || :
+pushd %{buildroot}/%{python3_sitearch}
+py.test-%{python3_version} --timeout=300 -k "not test_denormals" scipy || :
+popd
 %endif # with_python3
 
-mkdir test2
-cd test2
-PYTHONPATH=$RPM_BUILD_ROOT%{python2_sitearch} \
-    %__python2 -c "import scipy; scipy.test('full', verbose=2, extra_argv=['-n $(getconf _NPROCESSORS_ONLN)', '--timeout=300'])" || :
+pushd %{buildroot}/%{python2_sitearch}
+py.test-%{python2_version} --timeout=300 -k "not test_denormals" scipy || :
+popd
 
 
 %files -n python2-scipy
@@ -211,6 +194,12 @@ PYTHONPATH=$RPM_BUILD_ROOT%{python2_sitearch} \
 %endif # with_python3
 
 %changelog
+* Tue Oct 31 2017 Christian Dersch <lupinix@mailbox.org> - 1.0.0-2
+- Use openblas where available https://fedoraproject.org/wiki/Changes/OpenBLAS_as_default_BLAS
+- Remove ppc64 hackery for OpenBLAS
+- Don't run tests in parallel as pytest crashes
+- Don't run test_denormals as it tends to stuck
+
 * Thu Oct 26 2017 Thomas Spura <tomspur@fedoraproject.org> - 1.0.0-1
 - update to 1.0.0 and use pytest instead of nose
 - use timeout during parallel %%check
