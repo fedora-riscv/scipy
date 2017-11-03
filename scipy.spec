@@ -11,7 +11,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    0.19.1
-Release:    5%{?dist}
+Release:    6%{?dist}
 
 Group:      Development/Libraries
 # BSD -- whole package except:
@@ -24,12 +24,7 @@ Source0:    https://github.com/scipy/scipy/releases/download/v%{version}/scipy-%
 BuildRequires: numpy, python2-devel,f2py
 BuildRequires: fftw-devel, blas-devel, lapack-devel, suitesparse-devel
 %ifarch %{openblas_arches}
-%ifnarch ppc64
-# prefer atlas on ppc64 big endian
 BuildRequires: openblas-devel
-%else
-BuildRequires: atlas-devel
-%endif
 %else
 BuildRequires: atlas-devel
 %endif
@@ -107,6 +102,12 @@ amd_libs = amd
 library_dirs = %{_libdir}
 include_dirs = /usr/include/suitesparse
 umfpack_libs = umfpack
+
+%ifarch %{openblas_arches}
+[openblas]
+library_dirs = %{_libdir}
+openblas_libs = openblasp
+%endif
 EOF
 
 
@@ -115,11 +116,7 @@ EOF
 env CFLAGS="$RPM_OPT_FLAGS" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
 %ifarch %{openblas_arches}
-%ifnarch ppc64
     OPENBLAS=%{_libdir} \
-%else
-    ATLAS=%{_libdir}/atlas \
-%endif
 %else
     ATLAS=%{_libdir}/atlas \
 %endif
@@ -131,11 +128,7 @@ env CFLAGS="$RPM_OPT_FLAGS" \
 env CFLAGS="$RPM_OPT_FLAGS" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
 %ifarch %{openblas_arches}
-%ifnarch ppc64
     OPENBLAS=%{_libdir} \
-%else
-    ATLAS=%{_libdir}/atlas \
-%endif
 %else
     ATLAS=%{_libdir}/atlas \
 %endif    
@@ -151,11 +144,7 @@ env CFLAGS="$RPM_OPT_FLAGS" \
 env CFLAGS="$RPM_OPT_FLAGS" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
 %ifarch %{openblas_arches}
-%ifnarch ppc64
     OPENBLAS=%{_libdir} \
-%else
-    ATLAS=%{_libdir}/atlas \
-%endif
 %else
     ATLAS=%{_libdir}/atlas \
 %endif    
@@ -166,11 +155,7 @@ env CFLAGS="$RPM_OPT_FLAGS" \
 env CFLAGS="$RPM_OPT_FLAGS" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
 %ifarch %{openblas_arches}
-%ifnarch ppc64
     OPENBLAS=%{_libdir} \
-%else
-    ATLAS=%{_libdir}/atlas \
-%endif
 %else
     ATLAS=%{_libdir}/atlas \
 %endif    
@@ -183,13 +168,13 @@ env CFLAGS="$RPM_OPT_FLAGS" \
 mkdir test3
 cd test3
 PYTHONPATH=$RPM_BUILD_ROOT%{python3_sitearch} \
-    %__python3 -c "import scipy; scipy.test('full', verbose=2)" || :
+    %__python3 -c "import scipy; scipy.test('full', verbose=2, extra_argv=['-e *test_denormals*'])" || :
 %endif # with_python3
 
 mkdir test2
 cd test2
 PYTHONPATH=$RPM_BUILD_ROOT%{python2_sitearch} \
-    %__python2 -c "import scipy; scipy.test('full', verbose=2)" || :
+    %__python2 -c "import scipy; scipy.test('full', verbose=2, extra_argv=['-e *test_denormals*'])" || :
 
 
 %files -n python2-scipy
@@ -206,6 +191,9 @@ PYTHONPATH=$RPM_BUILD_ROOT%{python2_sitearch} \
 %endif # with_python3
 
 %changelog
+* Fri Nov 03 2017 Christian Dersch <lupinix@mailbox.org> - 0.19.1-6
+- OpenBLAS-related fixes
+
 * Wed Oct 04 2017 Christian Dersch <lupinix@mailbox.org> - 0.19.1-5
 - Use openblas where available (except ppc64), to use same as numpy (BZ 1472318)
 
