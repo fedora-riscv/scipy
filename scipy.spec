@@ -1,4 +1,5 @@
 %global with_python3 1
+%global with_doc 1
 %{?filter_setup:
 %filter_provides_in %{python2_sitearch}.*\.so$
 %filter_provides_in %{python3_sitearch}.*\.so$
@@ -11,7 +12,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.0.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 
 Group:      Development/Libraries
 # BSD -- whole package except:
@@ -41,6 +42,16 @@ BuildRequires:  python3-pytest
 BuildRequires:  python3-pytest-xdist
 BuildRequires:  python3-pytest-timeout
 %endif
+%if 0%{?with_doc}
+BuildRequires:  python2-sphinx
+BuildRequires:  python2-matplotlib
+BuildRequires:  python2-numpydoc
+%if 0%{?with_python3}
+BuildRequires:  python3-sphinx
+BuildRequires:  python3-matplotlib
+BuildRequires:  python3-numpydoc
+%endif # with_python3
+%endif # with_doc
 
 %description
 Scipy is open-source software for mathematics, science, and
@@ -73,6 +84,21 @@ quick to install, and are free of charge. NumPy and SciPy are easy to
 use, but powerful enough to be depended upon by some of the world's
 leading scientists and engineers.
 
+%if 0%{?with_doc}
+%package -n python2-scipy-doc
+Summary:    Scientific Tools for Python - documentation
+Requires:   python2-scipy = %{version}-%{release}
+%description -n python2-scipy-doc
+HTML documentation for Scipy
+
+%if 0%{?with_python3}
+%package -n python3-scipy-doc
+Summary:    Scientific Tools for Python - documentation
+Requires:   python3-scipy = %{version}-%{release}
+%description -n python3-scipy-doc
+HTML documentation for Scipy
+%endif # with_python3
+%endif # with_doc
 
 %if 0%{?with_python3}
 %package -n python3-scipy
@@ -127,7 +153,14 @@ env CFLAGS="$RPM_OPT_FLAGS" \
 %endif
     FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
     %__python3 setup.py config_fc \
-    --fcompiler=gnu95 --noarch build
+    --fcompiler=gnu95 --noarch \
+%if 0%{?with_doc}
+    build_sphinx
+    rm -r build/sphinx/html/.buildinfo
+    mv build/sphinx build/sphinx-%{python3_version}
+%else
+    build
+%endif # with_doc
 %endif # with _python3
 
 env CFLAGS="$RPM_OPT_FLAGS" \
@@ -139,8 +172,14 @@ env CFLAGS="$RPM_OPT_FLAGS" \
 %endif
     FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
     %__python2 setup.py config_fc \
-    --fcompiler=gnu95 --noarch build
-
+    --fcompiler=gnu95 --noarch \
+%if 0%{?with_doc}
+    build_sphinx
+    rm -r build/sphinx/html/.buildinfo
+    mv build/sphinx build/sphinx-%{python2_version}
+%else
+    build
+%endif # with_doc
 
 
 %install
@@ -185,15 +224,29 @@ popd
 %{python2_sitearch}/scipy
 %{python2_sitearch}/*.egg-info
 
+%if 0%{?with_doc}
+%files -n python2-scipy-doc
+%license LICENSE.txt
+%doc build/sphinx-%{python2_version}/html
+%endif # with_doc
 
 %if 0%{?with_python3}
 %files -n python3-scipy
 %doc LICENSE.txt
 %{python3_sitearch}/scipy
 %{python3_sitearch}/*.egg-info
+
+%if 0%{?with_doc}
+%files -n python3-scipy-doc
+%license LICENSE.txt
+%doc build/sphinx-%{python3_version}/html
+%endif # with_doc
 %endif # with_python3
 
 %changelog
+* Mon Nov 20 2017 Lumír Balhar <lbalhar@redhat.com> - 1.0.0-3
+- New subpackages with HTML documentation
+
 * Tue Oct 31 2017 Christian Dersch <lupinix@mailbox.org> - 1.0.0-2
 - Use openblas where available https://fedoraproject.org/wiki/Changes/OpenBLAS_as_default_BLAS
 - Remove ppc64 hackery for OpenBLAS
