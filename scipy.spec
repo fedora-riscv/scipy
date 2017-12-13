@@ -12,7 +12,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.0.0
-Release:    3%{?dist}
+Release:    4%{?dist}
 
 Group:      Development/Libraries
 # BSD -- whole package except:
@@ -208,6 +208,11 @@ env CFLAGS="$RPM_OPT_FLAGS" \
 
 
 %check
+# Skip all tests on s390x because they hangs unexpectedly and randomly
+# and pytest-timeout has no effect. Note that the outcome of the tests
+# is ignored anyway so by disabling the test for s390x we are not doing
+# anything more dangerous.
+%ifnarch s390x
 %if 0%{?with_python3}
 pushd %{buildroot}/%{python3_sitearch}
 py.test-%{python3_version} --timeout=300 -k "not test_denormals" scipy || :
@@ -218,6 +223,7 @@ pushd %{buildroot}/%{python2_sitearch}
 py.test-%{python2_version} --timeout=300 -k "not test_denormals" scipy || :
 popd
 
+%endif # ifnarch s390x
 
 %files -n python2-scipy
 %doc LICENSE.txt
@@ -244,6 +250,9 @@ popd
 %endif # with_python3
 
 %changelog
+* Mon Dec 11 2017 Lumír Balhar <lbalhar@redhat.com> - 1.0.0-4
+- Disable tests on s390x
+
 * Mon Nov 20 2017 Lumír Balhar <lbalhar@redhat.com> - 1.0.0-3
 - New subpackages with HTML documentation
 
