@@ -1,4 +1,5 @@
 %global with_python3 1
+%global with_doc 1
 %{?filter_setup:
 %filter_provides_in %{python2_sitearch}.*\.so$
 %filter_provides_in %{python3_sitearch}.*\.so$
@@ -10,8 +11,8 @@
 
 Summary:    Scientific Tools for Python
 Name:       scipy
-Version:    0.19.1
-Release:    6%{?dist}
+Version:    1.0.0
+Release:    4%{?dist}
 
 Group:      Development/Libraries
 # BSD -- whole package except:
@@ -22,6 +23,9 @@ Url:        http://www.scipy.org/scipylib/index.html
 Source0:    https://github.com/scipy/scipy/releases/download/v%{version}/scipy-%{version}.tar.xz
 
 BuildRequires: numpy, python2-devel,f2py
+BuildRequires: python2-pytest
+BuildRequires: python2-pytest-xdist
+BuildRequires: python2-pytest-timeout
 BuildRequires: fftw-devel, blas-devel, lapack-devel, suitesparse-devel
 %ifarch %{openblas_arches}
 BuildRequires: openblas-devel
@@ -34,8 +38,20 @@ BuildRequires: qhull-devel
 %if 0%{?with_python3}
 BuildRequires:  python3-numpy, python3-devel, python3-f2py
 BuildRequires:  python3-setuptools
-BuildRequires:  python3-nose
+BuildRequires:  python3-pytest
+BuildRequires:  python3-pytest-xdist
+BuildRequires:  python3-pytest-timeout
 %endif
+%if 0%{?with_doc}
+BuildRequires:  python2-sphinx
+BuildRequires:  python2-matplotlib
+BuildRequires:  python2-numpydoc
+%if 0%{?with_python3}
+BuildRequires:  python3-sphinx
+BuildRequires:  python3-matplotlib
+BuildRequires:  python3-numpydoc
+%endif # with_python3
+%endif # with_doc
 
 %description
 Scipy is open-source software for mathematics, science, and
@@ -68,6 +84,21 @@ quick to install, and are free of charge. NumPy and SciPy are easy to
 use, but powerful enough to be depended upon by some of the world's
 leading scientists and engineers.
 
+%if 0%{?with_doc}
+%package -n python2-scipy-doc
+Summary:    Scientific Tools for Python - documentation
+Requires:   python2-scipy = %{version}-%{release}
+%description -n python2-scipy-doc
+HTML documentation for Scipy
+
+%if 0%{?with_python3}
+%package -n python3-scipy-doc
+Summary:    Scientific Tools for Python - documentation
+Requires:   python3-scipy = %{version}-%{release}
+%description -n python3-scipy-doc
+HTML documentation for Scipy
+%endif # with_python3
+%endif # with_doc
 
 %if 0%{?with_python3}
 %package -n python3-scipy
@@ -122,7 +153,14 @@ env CFLAGS="$RPM_OPT_FLAGS" \
 %endif
     FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
     %__python3 setup.py config_fc \
-    --fcompiler=gnu95 --noarch build
+    --fcompiler=gnu95 --noarch \
+%if 0%{?with_doc}
+    build_sphinx
+    rm -r build/sphinx/html/.buildinfo
+    mv build/sphinx build/sphinx-%{python3_version}
+%else
+    build
+%endif # with_doc
 %endif # with _python3
 
 env CFLAGS="$RPM_OPT_FLAGS" \
@@ -131,11 +169,17 @@ env CFLAGS="$RPM_OPT_FLAGS" \
     OPENBLAS=%{_libdir} \
 %else
     ATLAS=%{_libdir}/atlas \
-%endif    
+%endif
     FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
     %__python2 setup.py config_fc \
-    --fcompiler=gnu95 --noarch build
-
+    --fcompiler=gnu95 --noarch \
+%if 0%{?with_doc}
+    build_sphinx
+    rm -r build/sphinx/html/.buildinfo
+    mv build/sphinx build/sphinx-%{python2_version}
+%else
+    build
+%endif # with_doc
 
 
 %install
@@ -147,7 +191,7 @@ env CFLAGS="$RPM_OPT_FLAGS" \
     OPENBLAS=%{_libdir} \
 %else
     ATLAS=%{_libdir}/atlas \
-%endif    
+%endif
     FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
     %__python3 setup.py install --root=$RPM_BUILD_ROOT
 %endif # with_python3
@@ -164,35 +208,66 @@ env CFLAGS="$RPM_OPT_FLAGS" \
 
 
 %check
+# Skip all tests on s390x because they hangs unexpectedly and randomly
+# and pytest-timeout has no effect. Note that the outcome of the tests
+# is ignored anyway so by disabling the test for s390x we are not doing
+# anything more dangerous.
+%ifnarch s390x
 %if 0%{?with_python3}
-mkdir test3
-cd test3
-PYTHONPATH=$RPM_BUILD_ROOT%{python3_sitearch} \
-    %__python3 -c "import scipy; scipy.test('full', verbose=2, extra_argv=['-e *test_denormals*'])" || :
+pushd %{buildroot}/%{python3_sitearch}
+py.test-%{python3_version} --timeout=300 -k "not test_denormals" scipy || :
+popd
 %endif # with_python3
 
-mkdir test2
-cd test2
-PYTHONPATH=$RPM_BUILD_ROOT%{python2_sitearch} \
-    %__python2 -c "import scipy; scipy.test('full', verbose=2, extra_argv=['-e *test_denormals*'])" || :
+pushd %{buildroot}/%{python2_sitearch}
+py.test-%{python2_version} --timeout=300 -k "not test_denormals" scipy || :
+popd
 
+%endif # ifnarch s390x
 
 %files -n python2-scipy
 %doc LICENSE.txt
 %{python2_sitearch}/scipy
 %{python2_sitearch}/*.egg-info
 
+%if 0%{?with_doc}
+%files -n python2-scipy-doc
+%license LICENSE.txt
+%doc build/sphinx-%{python2_version}/html
+%endif # with_doc
 
 %if 0%{?with_python3}
 %files -n python3-scipy
 %doc LICENSE.txt
 %{python3_sitearch}/scipy
 %{python3_sitearch}/*.egg-info
+
+%if 0%{?with_doc}
+%files -n python3-scipy-doc
+%license LICENSE.txt
+%doc build/sphinx-%{python3_version}/html
+%endif # with_doc
 %endif # with_python3
 
 %changelog
+* Mon Dec 11 2017 Lumír Balhar <lbalhar@redhat.com> - 1.0.0-4
+- Disable tests on s390x
+
+* Mon Nov 20 2017 Lumír Balhar <lbalhar@redhat.com> - 1.0.0-3
+- New subpackages with HTML documentation
+
 * Fri Nov 03 2017 Christian Dersch <lupinix@mailbox.org> - 0.19.1-6
 - OpenBLAS-related fixes
+
+* Tue Oct 31 2017 Christian Dersch <lupinix@mailbox.org> - 1.0.0-2
+- Use openblas where available https://fedoraproject.org/wiki/Changes/OpenBLAS_as_default_BLAS
+- Remove ppc64 hackery for OpenBLAS
+- Don't run tests in parallel as pytest crashes
+- Don't run test_denormals as it tends to stuck
+
+* Thu Oct 26 2017 Thomas Spura <tomspur@fedoraproject.org> - 1.0.0-1
+- update to 1.0.0 and use pytest instead of nose
+- use timeout during parallel %%check
 
 * Wed Oct 04 2017 Christian Dersch <lupinix@mailbox.org> - 0.19.1-5
 - Use openblas where available (except ppc64), to use same as numpy (BZ 1472318)
