@@ -12,7 +12,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.0.0
-Release:    4%{?dist}
+Release:    5%{?dist}
 
 Group:      Development/Libraries
 # BSD -- whole package except:
@@ -250,6 +250,9 @@ popd
 %endif # with_python3
 
 %changelog
+* Wed Jan 31 2018 Christian Dersch <lupinix@mailbox.org> - 1.0.0-5
+- rebuilt for GCC 8.x (gfortran soname bump)
+
 * Mon Dec 11 2017 Lumír Balhar <lbalhar@redhat.com> - 1.0.0-4
 - Disable tests on s390x
 
