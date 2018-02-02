@@ -12,7 +12,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.0.0
-Release:    5%{?dist}
+Release:    6%{?dist}
 
 Group:      Development/Libraries
 # BSD -- whole package except:
@@ -32,7 +32,7 @@ BuildRequires: openblas-devel
 %else
 BuildRequires: atlas-devel
 %endif
-BuildRequires: gcc-gfortran, swig
+BuildRequires: gcc-gfortran, swig, gcc-c++
 BuildRequires: qhull-devel
 
 %if 0%{?with_python3}
@@ -144,7 +144,7 @@ EOF
 
 %build
 %if 0%{?with_python3}
-env CFLAGS="$RPM_OPT_FLAGS" \
+env CFLAGS="$RPM_OPT_FLAGS -lm" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
 %ifarch %{openblas_arches}
     OPENBLAS=%{_libdir} \
@@ -185,7 +185,7 @@ env CFLAGS="$RPM_OPT_FLAGS" \
 %install
 # first install python3 so the binaries are overwritten by the python2 ones
 %if 0%{?with_python3}
-env CFLAGS="$RPM_OPT_FLAGS" \
+env CFLAGS="$RPM_OPT_FLAGS -lm" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
 %ifarch %{openblas_arches}
     OPENBLAS=%{_libdir} \
@@ -250,6 +250,10 @@ popd
 %endif # with_python3
 
 %changelog
+* Fri Feb 02 2018 Petr Viktorin <pviktori@redhat.com> - 1.0.0-6
+- Link with -lm to build with new stricter Fedora flags
+  https://bugzilla.redhat.com/show_bug.cgi?id=1541416
+
 * Wed Jan 31 2018 Christian Dersch <lupinix@mailbox.org> - 1.0.0-5
 - rebuilt for GCC 8.x (gfortran soname bump)
 
