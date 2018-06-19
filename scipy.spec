@@ -12,7 +12,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.0.0
-Release:    7%{?dist}
+Release:    8%{?dist}
 
 Group:      Development/Libraries
 # BSD -- whole package except:
@@ -250,6 +250,9 @@ popd
 %endif # with_python3
 
 %changelog
+* Tue Jun 19 2018 Miro Hrončok <mhroncok@redhat.com> - 1.0.0-8
+- Rebuilt for Python 3.7
+
 * Fri Feb 09 2018 Fedora Release Engineering <releng@fedoraproject.org> - 1.0.0-7
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
 
