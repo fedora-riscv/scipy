@@ -1,18 +1,13 @@
-%global with_python3 1
-%global with_doc 1
-%{?filter_setup:
-%filter_provides_in %{python2_sitearch}.*\.so$
-%filter_provides_in %{python3_sitearch}.*\.so$
-%filter_setup
-}
+# without means enabled
+%bcond_without doc
 
 # Set to pre-release version suffix if building pre-release, else %%{nil}
 %global rcver %{nil}
 
 Summary:    Scientific Tools for Python
 Name:       scipy
-Version:    1.0.0
-Release:    8%{?dist}
+Version:    1.1.0
+Release:    1%{?dist}
 
 Group:      Development/Libraries
 # BSD -- whole package except:
@@ -20,9 +15,9 @@ Group:      Development/Libraries
 # Public Domain -- scipy/odr/__odrpack.c
 License:    BSD and Boost and Public Domain
 Url:        http://www.scipy.org/scipylib/index.html
-Source0:    https://github.com/scipy/scipy/releases/download/v%{version}/scipy-%{version}.tar.xz
+Source0:    https://github.com/scipy/scipy/releases/download/v%{version}/scipy-%{version}.tar.gz
 
-BuildRequires: numpy, python2-devel,f2py
+BuildRequires: python2-numpy, python2-devel,python2-numpy-f2py
 BuildRequires: python2-pytest
 BuildRequires: python2-pytest-xdist
 BuildRequires: python2-pytest-timeout
@@ -35,23 +30,20 @@ BuildRequires: atlas-devel
 BuildRequires: gcc-gfortran, swig, gcc-c++
 BuildRequires: qhull-devel
 
-%if 0%{?with_python3}
-BuildRequires:  python3-numpy, python3-devel, python3-f2py
+BuildRequires:  python3-numpy, python3-devel, python3-numpy-f2py
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-pytest
 BuildRequires:  python3-pytest-xdist
 BuildRequires:  python3-pytest-timeout
-%endif
-%if 0%{?with_doc}
+
+%if %{with doc}
 BuildRequires:  python2-sphinx
 BuildRequires:  python2-matplotlib
 BuildRequires:  python2-numpydoc
-%if 0%{?with_python3}
 BuildRequires:  python3-sphinx
 BuildRequires:  python3-matplotlib
 BuildRequires:  python3-numpydoc
-%endif # with_python3
-%endif # with_doc
+%endif # with doc
 
 %description
 Scipy is open-source software for mathematics, science, and
@@ -84,23 +76,20 @@ quick to install, and are free of charge. NumPy and SciPy are easy to
 use, but powerful enough to be depended upon by some of the world's
 leading scientists and engineers.
 
-%if 0%{?with_doc}
+%if %{with doc}
 %package -n python2-scipy-doc
 Summary:    Scientific Tools for Python - documentation
 Requires:   python2-scipy = %{version}-%{release}
 %description -n python2-scipy-doc
 HTML documentation for Scipy
 
-%if 0%{?with_python3}
 %package -n python3-scipy-doc
 Summary:    Scientific Tools for Python - documentation
 Requires:   python3-scipy = %{version}-%{release}
 %description -n python3-scipy-doc
 HTML documentation for Scipy
-%endif # with_python3
-%endif # with_doc
+%endif # with doc
 
-%if 0%{?with_python3}
 %package -n python3-scipy
 Summary:    Scientific Tools for Python
 Group:      Development/Libraries
@@ -118,7 +107,6 @@ quick to install, and are free of charge. NumPy and SciPy are easy to
 use, but powerful enough to be depended upon by some of the world's
 leading scientists and engineers.
 
-%endif # with _python3
 
 %prep
 %setup -q -n %{name}-%{version}%{?rcver}
@@ -141,9 +129,15 @@ openblas_libs = openblasp
 %endif
 EOF
 
+# sphinx_build somehow randomly decides which docs to build here
+# there is: doc/source/conf.py - scipy docs - we want that one
+#           doc/sphinxext/doc/conf.py - bundled numpydoc documentation
+#           doc/scipy-sphinx-theme/conf.py - testing documentation for the theme
+rm doc/sphinxext -r # contains only bundled numpydoc
+rm doc/scipy-sphinx-theme/conf.py
+
 
 %build
-%if 0%{?with_python3}
 env CFLAGS="$RPM_OPT_FLAGS -lm" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
 %ifarch %{openblas_arches}
@@ -154,14 +148,13 @@ env CFLAGS="$RPM_OPT_FLAGS -lm" \
     FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
     %__python3 setup.py config_fc \
     --fcompiler=gnu95 --noarch \
-%if 0%{?with_doc}
+%if %{with doc}
     build_sphinx
     rm -r build/sphinx/html/.buildinfo
     mv build/sphinx build/sphinx-%{python3_version}
 %else
     build
-%endif # with_doc
-%endif # with _python3
+%endif # with doc
 
 env CFLAGS="$RPM_OPT_FLAGS" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
@@ -173,18 +166,16 @@ env CFLAGS="$RPM_OPT_FLAGS" \
     FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
     %__python2 setup.py config_fc \
     --fcompiler=gnu95 --noarch \
-%if 0%{?with_doc}
+%if %{with doc}
     build_sphinx
     rm -r build/sphinx/html/.buildinfo
     mv build/sphinx build/sphinx-%{python2_version}
 %else
     build
-%endif # with_doc
+%endif # with doc
 
 
 %install
-# first install python3 so the binaries are overwritten by the python2 ones
-%if 0%{?with_python3}
 env CFLAGS="$RPM_OPT_FLAGS -lm" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
 %ifarch %{openblas_arches}
@@ -193,8 +184,7 @@ env CFLAGS="$RPM_OPT_FLAGS -lm" \
     ATLAS=%{_libdir}/atlas \
 %endif
     FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
-    %__python3 setup.py install --root=$RPM_BUILD_ROOT
-%endif # with_python3
+    %__python3 setup.py install --root=%{buildroot}
 
 env CFLAGS="$RPM_OPT_FLAGS" \
     FFLAGS="$RPM_OPT_FLAGS -fPIC" \
@@ -204,7 +194,7 @@ env CFLAGS="$RPM_OPT_FLAGS" \
     ATLAS=%{_libdir}/atlas \
 %endif
     FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
-    %__python2 setup.py install --root=$RPM_BUILD_ROOT
+    %__python2 setup.py install --root=%{buildroot}
 
 
 %check
@@ -213,11 +203,9 @@ env CFLAGS="$RPM_OPT_FLAGS" \
 # is ignored anyway so by disabling the test for s390x we are not doing
 # anything more dangerous.
 %ifnarch s390x
-%if 0%{?with_python3}
 pushd %{buildroot}/%{python3_sitearch}
 py.test-%{python3_version} --timeout=300 -k "not test_denormals" scipy || :
 popd
-%endif # with_python3
 
 pushd %{buildroot}/%{python2_sitearch}
 py.test-%{python2_version} --timeout=300 -k "not test_denormals" scipy || :
@@ -227,29 +215,30 @@ popd
 
 %files -n python2-scipy
 %doc LICENSE.txt
-%{python2_sitearch}/scipy
+%{python2_sitearch}/scipy/
 %{python2_sitearch}/*.egg-info
 
-%if 0%{?with_doc}
+%if %{with doc}
 %files -n python2-scipy-doc
 %license LICENSE.txt
 %doc build/sphinx-%{python2_version}/html
-%endif # with_doc
+%endif # with doc
 
-%if 0%{?with_python3}
 %files -n python3-scipy
 %doc LICENSE.txt
-%{python3_sitearch}/scipy
+%{python3_sitearch}/scipy/
 %{python3_sitearch}/*.egg-info
 
-%if 0%{?with_doc}
+%if %{with doc}
 %files -n python3-scipy-doc
 %license LICENSE.txt
 %doc build/sphinx-%{python3_version}/html
-%endif # with_doc
-%endif # with_python3
+%endif # with doc
 
 %changelog
+* Fri Jun 22 2018 Miro Hrončok <mhroncok@redhat.com> - 1.1.0-1
+- Update to 1.1.0 (#1560265, #1594355)
+
 * Tue Jun 19 2018 Miro Hrončok <mhroncok@redhat.com> - 1.0.0-8
 - Rebuilt for Python 3.7
 
