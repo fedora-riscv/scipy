@@ -7,7 +7,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.1.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 
 Group:      Development/Libraries
 # BSD -- whole package except:
@@ -16,6 +16,11 @@ Group:      Development/Libraries
 License:    BSD and Boost and Public Domain
 Url:        http://www.scipy.org/scipylib/index.html
 Source0:    https://github.com/scipy/scipy/releases/download/v%{version}/scipy-%{version}.tar.gz
+
+# Previously we ignored the tests results, because they don't always pass
+# Instead of ignoring the results entirely, we allow certain failure rate
+# https://stackoverflow.com/a/47731333/1839451
+Patch0:     acceptable_failure_rate.patch
 
 BuildRequires: python2-numpy, python2-devel,python2-numpy-f2py
 BuildRequires: python2-pytest
@@ -109,7 +114,7 @@ leading scientists and engineers.
 
 
 %prep
-%setup -q -n %{name}-%{version}%{?rcver}
+%autosetup -p1 -n %{name}-%{version}%{?rcver}
 cat > site.cfg << EOF
 
 [amd]
@@ -164,18 +169,35 @@ done
 %check
 # Skip all tests on s390x because they hangs unexpectedly and randomly
 # and pytest-timeout has no effect. Note that the outcome of the tests
-# is ignored anyway so by disabling the test for s390x we are not doing
-# anything more dangerous.
-%ifnarch s390x
+# was previously ignored anyway so by disabling the test for s390x we
+# are not doing anything more dangerous.
+%ifarch s390x
+exit 0
+%endif
+
+%ifarch x86_64
+export ACCEPTABLE_FAILURE_RATE=0
+%else
+# there are usually 10-21 test failing, so we allow 1% failure rate
+export ACCEPTABLE_FAILURE_RATE=1
+%endif
+
+%ifarch ppc64le
+# test_decomp segfaults on ppc64le
+export k="not test_denormals and not test_decomp"
+%else
+# test_denormals tends to stuck
+export k="not test_denormals"
+%endif
+
 pushd %{buildroot}/%{python3_sitearch}
-py.test-%{python3_version} --timeout=300 -k "not test_denormals" scipy || :
+py.test-3 --timeout=300 -k "$k" scipy
 popd
 
 pushd %{buildroot}/%{python2_sitearch}
-py.test-%{python2_version} --timeout=300 -k "not test_denormals" scipy || :
+py.test-2 --timeout=300 -k "$k" scipy
 popd
 
-%endif # ifnarch s390x
 
 %files -n python2-scipy
 %doc LICENSE.txt
@@ -200,6 +222,10 @@ popd
 %endif # with doc
 
 %changelog
+* Sat Jun 23 2018 Miro Hrončok <mhroncok@redhat.com> - 1.1.0-2
+- Don't ignore the tests results but rather have a tolerance rate
+- Skip test_decomp on ppc64le as it currently segfaults
+
 * Fri Jun 22 2018 Miro Hrončok <mhroncok@redhat.com> - 1.1.0-1
 - Update to 1.1.0 (#1560265, #1594355)
 
