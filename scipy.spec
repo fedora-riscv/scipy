@@ -129,73 +129,36 @@ openblas_libs = openblasp
 %endif
 EOF
 
-# sphinx_build somehow randomly decides which docs to build here
-# there is: doc/source/conf.py - scipy docs - we want that one
-#           doc/sphinxext/doc/conf.py - bundled numpydoc documentation
-#           doc/scipy-sphinx-theme/conf.py - testing documentation for the theme
-rm doc/sphinxext -r # contains only bundled numpydoc
-rm doc/scipy-sphinx-theme/conf.py
+# remove bundled numpydoc
+rm doc/sphinxext -r
 
 
 %build
-env CFLAGS="$RPM_OPT_FLAGS -lm" \
-    FFLAGS="$RPM_OPT_FLAGS -fPIC" \
-%ifarch %{openblas_arches}
+for PY in %{python3_version} %{python2_version}; do
+  env CFLAGS="$RPM_OPT_FLAGS -lm" \
+      FFLAGS="$RPM_OPT_FLAGS -fPIC" \
+  %ifarch %{openblas_arches}
     OPENBLAS=%{_libdir} \
-%else
+  %else
     ATLAS=%{_libdir}/atlas \
-%endif
+  %endif
     FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
-    %__python3 setup.py config_fc \
+    %{_bindir}/python$PY setup.py config_fc \
     --fcompiler=gnu95 --noarch \
-%if %{with doc}
-    build_sphinx
-    rm -r build/sphinx/html/.buildinfo
-    mv build/sphinx build/sphinx-%{python3_version}
-%else
     build
-%endif # with doc
 
-env CFLAGS="$RPM_OPT_FLAGS" \
-    FFLAGS="$RPM_OPT_FLAGS -fPIC" \
-%ifarch %{openblas_arches}
-    OPENBLAS=%{_libdir} \
-%else
-    ATLAS=%{_libdir}/atlas \
-%endif
-    FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
-    %__python2 setup.py config_fc \
-    --fcompiler=gnu95 --noarch \
-%if %{with doc}
-    build_sphinx
-    rm -r build/sphinx/html/.buildinfo
-    mv build/sphinx build/sphinx-%{python2_version}
-%else
-    build
-%endif # with doc
-
+  %if %{with doc}
+  pushd doc
+  PYTHONPATH=../build/lib.linux-*-$PY/ make html SPHINXBUILD=sphinx-build-$PY
+  rm -rf build/html/.buildinfo
+  mv build build-$PY
+  popd
+  %endif
+done
 
 %install
-env CFLAGS="$RPM_OPT_FLAGS -lm" \
-    FFLAGS="$RPM_OPT_FLAGS -fPIC" \
-%ifarch %{openblas_arches}
-    OPENBLAS=%{_libdir} \
-%else
-    ATLAS=%{_libdir}/atlas \
-%endif
-    FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
-    %__python3 setup.py install --root=%{buildroot}
-
-env CFLAGS="$RPM_OPT_FLAGS" \
-    FFLAGS="$RPM_OPT_FLAGS -fPIC" \
-%ifarch %{openblas_arches}
-    OPENBLAS=%{_libdir} \
-%else
-    ATLAS=%{_libdir}/atlas \
-%endif
-    FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
-    %__python2 setup.py install --root=%{buildroot}
-
+%py3_install
+%py2_install
 
 %check
 # Skip all tests on s390x because they hangs unexpectedly and randomly
@@ -221,7 +184,7 @@ popd
 %if %{with doc}
 %files -n python2-scipy-doc
 %license LICENSE.txt
-%doc build/sphinx-%{python2_version}/html
+%doc doc/build-%{python2_version}/html
 %endif # with doc
 
 %files -n python3-scipy
@@ -232,7 +195,7 @@ popd
 %if %{with doc}
 %files -n python3-scipy-doc
 %license LICENSE.txt
-%doc build/sphinx-%{python3_version}/html
+%doc doc/build-%{python3_version}/html
 %endif # with doc
 
 %changelog
