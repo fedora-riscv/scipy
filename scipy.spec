@@ -7,7 +7,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.1.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 
 Group:      Development/Libraries
 # BSD -- whole package except:
@@ -222,6 +222,9 @@ popd
 %endif # with doc
 
 %changelog
+* Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org> - 1.1.0-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
+
 * Sat Jun 23 2018 Miro Hrončok <mhroncok@redhat.com> - 1.1.0-2
 - Don't ignore the tests results but rather have a tolerance rate
 - Skip test_decomp on ppc64le as it currently segfaults
