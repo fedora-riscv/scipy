@@ -9,7 +9,6 @@ Name:       scipy
 Version:    1.1.0
 Release:    3%{?dist}
 
-Group:      Development/Libraries
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
 # Public Domain -- scipy/odr/__odrpack.c
@@ -97,7 +96,6 @@ HTML documentation for Scipy
 
 %package -n python3-scipy
 Summary:    Scientific Tools for Python
-Group:      Development/Libraries
 License:    BSD and LGPLv2+
 Requires:   python3-numpy, python3-f2py
 %{?python_provide:%python_provide python3-scipy}
