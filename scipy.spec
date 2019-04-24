@@ -6,7 +6,7 @@
 
 Summary:    Scientific Tools for Python
 Name:       scipy
-Version:    1.2.0
+Version:    1.2.1
 Release:    1%{?dist}
 
 # BSD -- whole package except:
@@ -33,6 +33,7 @@ BuildRequires: atlas-devel
 %endif
 BuildRequires: gcc-gfortran, swig, gcc-c++
 BuildRequires: qhull-devel
+BuildRequires: /usr/bin/pathfix.py
 
 BuildRequires:  python3-numpy, python3-devel, python3-numpy-f2py
 BuildRequires:  python3-setuptools
@@ -41,9 +42,11 @@ BuildRequires:  python3-pytest-xdist
 BuildRequires:  python3-pytest-timeout
 
 %if %{with doc}
+%if 0%{?fedora} < 31
 BuildRequires:  python2-sphinx
 BuildRequires:  python2-matplotlib
 BuildRequires:  python2-numpydoc
+%endif
 BuildRequires:  python3-sphinx
 BuildRequires:  python3-matplotlib
 BuildRequires:  python3-numpydoc
@@ -151,18 +154,25 @@ for PY in %{python3_version} %{python2_version}; do
     build
 
   %if %{with doc}
-  pushd doc
-  export PYTHONPATH=$(echo ../build/lib.linux-*-$PY/)
-  make html SPHINXBUILD=sphinx-build-$PY
-  rm -rf build/html/.buildinfo
-  mv build build-$PY
-  popd
+  # No python2-sphinx on Fedora 31+
+  if [ $PY == %{python3_version} -o 0%{?fedora} -lt 31 ]
+  then
+    pushd doc
+    export PYTHONPATH=$(echo ../build/lib.linux-*-$PY/)
+    make html SPHINXBUILD=sphinx-build-$PY
+    rm -rf build/html/.buildinfo
+    mv build build-$PY
+    popd
+  fi
   %endif
 done
 
 %install
 %py3_install
 %py2_install
+# Some files got ambiguous python shebangs, we fix them after everything else is done
+pathfix.py -pni "%{__python2} %{py2_shbang_opts}" %{buildroot}%{python2_sitearch}
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" %{buildroot}%{python3_sitearch}
 
 %check
 # Skip all tests on s390x because they hangs unexpectedly and randomly
@@ -206,7 +216,7 @@ popd
 %{python2_sitearch}/scipy/
 %{python2_sitearch}/*.egg-info
 
-%if %{with doc}
+%if %{with doc} && 0%{?fedora} < 31
 %files -n python2-scipy-doc
 %license LICENSE.txt
 %doc doc/build-%{python2_version}/html
@@ -224,6 +234,10 @@ popd
 %endif # with doc
 
 %changelog
+* Tue Apr 23 2019 Orion Poplawski <orion@nwra.com> - 1.2.1-1
+- Update to 1.2.1
+- Drop scipy2-doc
+
 * Wed Feb 06 2019 Charalampos Stratakis <cstratak@redhat.com> - 1.2.0-1
 - Update to 1.2.0
 
