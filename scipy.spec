@@ -7,7 +7,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.2.1
-Release:    1%{?dist}
+Release:    2%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -198,6 +198,9 @@ export k="not test_denormals and not test_decomp"
 export k="not test_denormals"
 %endif
 
+# Do not create -PYTEST.pyc files
+export PYTHONDONTWRITEBYTECODE=1
+
 pushd %{buildroot}/%{python3_sitearch}
 py.test-3 --timeout=300 -k "$k" scipy
 # Remove test remnants
@@ -234,6 +237,9 @@ popd
 %endif # with doc
 
 %changelog
+* Fri Apr 26 2019 Orion Poplawski <orion@nwra.com> - 1.2.1-2
+- Do not create *-PYTEST.pyc files
+
 * Tue Apr 23 2019 Orion Poplawski <orion@nwra.com> - 1.2.1-1
 - Update to 1.2.1
 - Drop scipy2-doc
