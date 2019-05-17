@@ -7,7 +7,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.2.1
-Release:    2%{?dist}
+Release:    3%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -130,8 +130,8 @@ umfpack_libs = umfpack
 
 %ifarch %{openblas_arches}
 [openblas]
+libraries = openblasp
 library_dirs = %{_libdir}
-openblas_libs = openblasp
 %endif
 EOF
 
@@ -237,6 +237,9 @@ popd
 %endif # with doc
 
 %changelog
+* Thu May 16 2019 Orion Poplawski <orion@nwra.com> - 1.2.1-3
+- Build only against openblasp (bugz#1709161)
+
 * Fri Apr 26 2019 Orion Poplawski <orion@nwra.com> - 1.2.1-2
 - Do not create *-PYTEST.pyc files
 
