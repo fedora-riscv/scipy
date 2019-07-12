@@ -55,7 +55,7 @@ BuildRequires:  python2-numpydoc
 BuildRequires:  python3-sphinx
 BuildRequires:  python3-matplotlib
 BuildRequires:  python3-numpydoc
-%endif # with doc
+%endif
 
 %global _description %{expand:
 Scipy is open-source software for mathematics, science, and
@@ -92,7 +92,7 @@ Summary:    Scientific Tools for Python - documentation
 Requires:   python3-scipy = %{version}-%{release}
 %description -n python3-scipy-doc
 HTML documentation for Scipy
-%endif # with doc
+%endif
 
 %package -n python3-scipy
 Summary:    Scientific Tools for Python
@@ -214,7 +214,7 @@ popd
 %files -n python2-scipy-doc
 %license LICENSE.txt
 %doc doc/build-%{python2_version}/html
-%endif # with doc
+%endif
 
 %files -n python3-scipy
 %doc LICENSE.txt
@@ -225,7 +225,7 @@ popd
 %files -n python3-scipy-doc
 %license LICENSE.txt
 %doc doc/build-%{python3_version}/html
-%endif # with doc
+%endif
 
 %changelog
 * Mon Jun 10 2019 Marcel Plch <mplch@redhat.com> - 1.2.1-4
@@ -312,7 +312,7 @@ popd
 
 * Tue Jul 26 2016 Than Ngo <than@redhat.com> - 0.18.0-1
 - 0.18.0
-- %%check: make non-fatal as temporary workaround for scipy build on arm 
+- %%check: make non-fatal as temporary workaround for scipy build on arm
 
 * Tue Jul 19 2016 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.17.0-2
 - https://fedoraproject.org/wiki/Changes/Automatic_Provides_for_Python_RPM_Packages
@@ -602,4 +602,3 @@ popd
 - Add changelog
 - Removed Prefix, Vendor
 - Fix Source0
-
