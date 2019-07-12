@@ -57,7 +57,7 @@ BuildRequires:  python3-matplotlib
 BuildRequires:  python3-numpydoc
 %endif # with doc
 
-%description
+%global _description %{expand:
 Scipy is open-source software for mathematics, science, and
 engineering. The core library is NumPy which provides convenient and
 fast N-dimensional array manipulation. The SciPy library is built to
@@ -66,8 +66,9 @@ numerical routines such as routines for numerical integration and
 optimization. Together, they run on all popular operating systems, are
 quick to install, and are free of charge. NumPy and SciPy are easy to
 use, but powerful enough to be depended upon by some of the world's
-leading scientists and engineers.
+leading scientists and engineers.}
 
+%description %_description
 
 %package -n python2-scipy
 Summary:    Scientific Tools for Python
@@ -77,16 +78,7 @@ Requires:   numpy, f2py
 Provides:       scipy = %{version}-%{release}
 Provides:       scipy%{?_isa} = %{version}-%{release}
 Obsoletes:      scipy <= 0.16.0
-%description -n python2-scipy
-Scipy is open-source software for mathematics, science, and
-engineering. The core library is NumPy which provides convenient and
-fast N-dimensional array manipulation. The SciPy library is built to
-work with NumPy arrays, and provides many user-friendly and efficient
-numerical routines such as routines for numerical integration and
-optimization. Together, they run on all popular operating systems, are
-quick to install, and are free of charge. NumPy and SciPy are easy to
-use, but powerful enough to be depended upon by some of the world's
-leading scientists and engineers.
+%description -n python2-scipy  %_description
 
 %if %{with doc}
 %package -n python2-scipy-doc
@@ -107,17 +99,7 @@ Summary:    Scientific Tools for Python
 License:    BSD and LGPLv2+
 Requires:   python3-numpy, python3-f2py
 %{?python_provide:%python_provide python3-scipy}
-%description -n python3-scipy
-Scipy is open-source software for mathematics, science, and
-engineering. The core library is NumPy which provides convenient and
-fast N-dimensional array manipulation. The SciPy library is built to
-work with NumPy arrays, and provides many user-friendly and efficient
-numerical routines such as routines for numerical integration and
-optimization. Together, they run on all popular operating systems, are
-quick to install, and are free of charge. NumPy and SciPy are easy to
-use, but powerful enough to be depended upon by some of the world's
-leading scientists and engineers.
-
+%description -n python3-scipy %_description
 
 %prep
 %autosetup -p1 -n %{name}-%{version}%{?rcver}
