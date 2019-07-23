@@ -191,13 +191,13 @@ export k="not test_denormals"
 export PYTHONDONTWRITEBYTECODE=1
 
 pushd %{buildroot}/%{python3_sitearch}
-py.test-3 --timeout=300 -k "$k" scipy
+%{__python3} -m pytest --timeout=300 -k "$k" scipy --numprocesses=auto
 # Remove test remnants
 rm -rf gram{A,B}
 popd
 
 pushd %{buildroot}/%{python2_sitearch}
-py.test-2 -k "$k" scipy
+%{__python2} -m pytest -k "$k" scipy
 # Remove test remnants
 rm -f gram{A,B}
 popd
@@ -228,6 +228,8 @@ popd
 %changelog
 * Tue Jul 30 2019 Petr Viktorin <pviktori@redhat.com> - 1.2.1-6
 - Remove build dependency on python2-pytest-xdist and python2-pytest-timeout
+- Enable parallel tests in Python 3 %%check
+- Use macros for Python interpreter in tests
 
 * Fri Jul 26 2019 Fedora Release Engineering <releng@fedoraproject.org> - 1.2.1-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
