@@ -7,7 +7,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.2.1
-Release:    7%{?dist}
+Release:    8%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -227,6 +227,9 @@ popd
 %endif
 
 %changelog
+* Thu Oct 03 2019 Miro Hrončok <mhroncok@redhat.com> - 1.2.1-8
+- Rebuilt for Python 3.8.0rc1 (#1748018)
+
 * Mon Aug 19 2019 Miro Hrončok <mhroncok@redhat.com> - 1.2.1-7
 - Rebuilt for Python 3.8
 
