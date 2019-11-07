@@ -25,6 +25,11 @@ Patch0:     acceptable_failure_rate.patch
 # structure fields accessed in __odrpack.c are now deprecated.
 Patch1:     numpy-deprecation-warnings.patch
 
+# Bugfix of cKDTree
+# PR: https://github.com/scipy/scipy/pull/10567
+# Issue: https://github.com/scipy/scipy/issues/11021
+Patch2:     ckdtree_bugfix.patch
+
 BuildRequires: fftw-devel, blas-devel, lapack-devel, suitesparse-devel
 %ifarch %{openblas_arches}
 BuildRequires: openblas-devel
@@ -184,6 +189,7 @@ popd
 * Fri Oct 18 2019 Miro Hrončok <mhroncok@redhat.com> - 1.3.1-1
 - Update to 1.3.1 (#1674101)
 - Drop Python 2 packages (not supported by SciPy >= 1.3)
+- Backported upstream patch for cKDTree (fixes FTBFS)
 
 * Thu Oct 03 2019 Miro Hrončok <mhroncok@redhat.com> - 1.2.1-8
 - Rebuilt for Python 3.8.0rc1 (#1748018)
