@@ -68,7 +68,6 @@ leading scientists and engineers.}
 
 %package -n python3-scipy
 Summary:    Scientific Tools for Python
-License:    BSD and LGPLv2+
 Requires:   python3-numpy, python3-f2py
 %{?python_provide:%python_provide python3-scipy}
 %description -n python3-scipy %_description
