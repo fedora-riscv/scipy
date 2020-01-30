@@ -7,7 +7,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.3.1
-Release:    1%{?dist}
+Release:    2%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -185,6 +185,9 @@ popd
 %endif
 
 %changelog
+* Thu Jan 30 2020 Fedora Release Engineering <releng@fedoraproject.org> - 1.3.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
+
 * Fri Oct 18 2019 Miro Hrončok <mhroncok@redhat.com> - 1.3.1-1
 - Update to 1.3.1 (#1674101)
 - Drop Python 2 packages (not supported by SciPy >= 1.3)
