@@ -162,12 +162,9 @@ export k="not test_denormals and not test_decomp"
 export k="not test_denormals"
 %endif
 
-# Do not create -PYTEST.pyc files
-export PYTHONDONTWRITEBYTECODE=1
-
 pushd %{buildroot}/%{python3_sitearch}
 # TODO TestIQR.test_scale fails on Python 3.8+ due to some warnings, investigate
-%{__python3} -m pytest --timeout=500 -k "$k and not (TestIQR and test_scale)" scipy --numprocesses=auto
+%{pytest} --timeout=500 -k "$k and not (TestIQR and test_scale)" scipy --numprocesses=auto
 # Remove test remnants
 rm -rf gram{A,B}
 popd
