@@ -6,8 +6,8 @@
 
 Summary:    Scientific Tools for Python
 Name:       scipy
-Version:    1.4.1
-Release:    2%{?dist}
+Version:    1.5.0
+Release:    1%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -181,6 +181,9 @@ popd
 %endif
 
 %changelog
+* Tue Jun 23 2020 Elliott Sales de Andrade <quantum.analyst@gmail.com> - 1.5.0-1
+- Update to latest version
+
 * Mon May 25 2020 Miro Hrončok <mhroncok@redhat.com> - 1.4.1-2
 - Rebuilt for Python 3.9
 
