@@ -7,7 +7,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.5.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -181,6 +181,9 @@ popd
 %endif
 
 %changelog
+* Wed Jul 29 2020 Fedora Release Engineering <releng@fedoraproject.org> - 1.5.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
+
 * Tue Jun 23 2020 Elliott Sales de Andrade <quantum.analyst@gmail.com> - 1.5.0-1
 - Update to latest version
 
