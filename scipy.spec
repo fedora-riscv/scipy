@@ -4,10 +4,18 @@
 # Set to pre-release version suffix if building pre-release, else %%{nil}
 %global rcver %{nil}
 
+%if 0%{?fedora} >= 33 || 0%{?rhel} >= 9
+%global blaslib flexiblas
+%global blasvar %{nil}
+%else
+%global blaslib openblas
+%global blasvar p
+%endif
+
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.5.0
-Release:    3%{?dist}
+Release:    4%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -21,12 +29,8 @@ Source0:    https://github.com/scipy/scipy/releases/download/v%{version}/scipy-%
 # https://stackoverflow.com/a/47731333/1839451
 Patch0:     acceptable_failure_rate.patch
 
-BuildRequires: fftw-devel, blas-devel, lapack-devel, suitesparse-devel
-%ifarch %{openblas_arches}
-BuildRequires: openblas-devel
-%else
-BuildRequires: atlas-devel
-%endif
+BuildRequires: fftw-devel, suitesparse-devel
+BuildRequires: %{blaslib}-devel
 BuildRequires: gcc-gfortran, swig, gcc-c++
 BuildRequires: qhull-devel
 BuildRequires: /usr/bin/pathfix.py
@@ -88,11 +92,9 @@ library_dirs = %{_libdir}
 include_dirs = /usr/include/suitesparse
 umfpack_libs = umfpack
 
-%ifarch %{openblas_arches}
 [openblas]
-libraries = openblasp
+libraries = %{blaslib}%{blasvar}
 library_dirs = %{_libdir}
-%endif
 EOF
 
 # Docs won't build unless the .dat files are specified here
@@ -112,11 +114,7 @@ for PY in %{python3_version}; do
   %else
       FFLAGS="$RPM_OPT_FLAGS -fPIC" \
   %endif
-  %ifarch %{openblas_arches}
     OPENBLAS=%{_libdir} \
-  %else
-    ATLAS=%{_libdir}/atlas \
-  %endif
     FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
     %{_bindir}/python$PY setup.py config_fc \
     --fcompiler=gnu95 --noarch \
@@ -138,6 +136,9 @@ done
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" %{buildroot}%{python3_sitearch}
 
 %check
+# check against the reference BLAS/LAPACK
+export FLEXIBLAS=netlib
+
 # Skip all tests on s390x because they hangs unexpectedly and randomly
 # and pytest-timeout has no effect. Note that the outcome of the tests
 # was previously ignored anyway so by disabling the test for s390x we
@@ -181,6 +182,9 @@ popd
 %endif
 
 %changelog
+* Sun Aug 16 2020 Iñaki Úcar <iucar@fedoraproject.org> - 1.5.0-4
+- https://fedoraproject.org/wiki/Changes/FlexiBLAS_as_BLAS/LAPACK_manager
+
 * Sat Aug 01 2020 Fedora Release Engineering <releng@fedoraproject.org> - 1.5.0-3
 - Second attempt - Rebuilt for
   https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
