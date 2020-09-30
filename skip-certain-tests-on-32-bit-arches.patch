@@ -1,0 +1,47 @@
+From ea0a77cf8761a8b8636b93314139ed0fc0a9d1db Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Nikola=20Forr=C3=B3?= <nforro@redhat.com>
+Date: Wed, 30 Sep 2020 11:44:25 +0200
+Subject: [PATCH] TST: make a couple of tests expected to fail on 32-bit
+ architectures
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+In TestConstructUtils.test_concatenate_int32_overflow
+and test_nnz_overflow, on a 32-bit architecture, in case
+check_free_memory() passes, ValueError is raised on an attempt
+to create a numpy array too large for a 32-bit architecture.
+
+Signed-off-by: Nikola Forró <nforro@redhat.com>
+---
+ scipy/sparse/tests/test_construct.py   | 1 +
+ scipy/sparse/tests/test_sparsetools.py | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/scipy/sparse/tests/test_construct.py b/scipy/sparse/tests/test_construct.py
+index 3a882c6cc..5a2b92667 100644
+--- a/scipy/sparse/tests/test_construct.py
++++ b/scipy/sparse/tests/test_construct.py
+@@ -378,6 +378,7 @@ class TestConstructUtils(object):
+         excinfo.match(r'Got blocks\[0,1\]\.shape\[0\] == 1, expected 2')
+ 
+     @pytest.mark.slow
++    @pytest.mark.xfail_on_32bit("Can't create large array for test")
+     def test_concatenate_int32_overflow(self):
+         """ test for indptr overflow when concatenating matrices """
+         check_free_memory(30000)
+diff --git a/scipy/sparse/tests/test_sparsetools.py b/scipy/sparse/tests/test_sparsetools.py
+index 0c208ef44..e95df1ba0 100644
+--- a/scipy/sparse/tests/test_sparsetools.py
++++ b/scipy/sparse/tests/test_sparsetools.py
+@@ -61,6 +61,7 @@ def test_regression_std_vector_dtypes():
+ 
+ 
+ @pytest.mark.slow
++@pytest.mark.xfail_on_32bit("Can't create large array for test")
+ def test_nnz_overflow():
+     # Regression test for gh-7230 / gh-7871, checking that coo_todense
+     # with nnz > int32max doesn't overflow.
+-- 
+2.26.2
+

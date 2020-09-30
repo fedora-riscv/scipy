@@ -15,7 +15,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.5.2
-Release:    1%{?dist}
+Release:    2%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -25,7 +25,7 @@ Url:        http://www.scipy.org/scipylib/index.html
 Source0:    https://github.com/scipy/scipy/releases/download/v%{version}/scipy-%{version}.tar.gz
 
 # https://github.com/scipy/scipy/pull/12899
-Patch0:     test_nnz_overflow.patch
+Patch0:     skip-certain-tests-on-32-bit-arches.patch
 
 BuildRequires: fftw-devel, suitesparse-devel
 BuildRequires: %{blaslib}-devel
@@ -171,6 +171,9 @@ popd
 %endif
 
 %changelog
+* Wed Sep 30 2020 Nikola Forró <nforro@redhat.com> - 1.5.2-2
+- Skip one more test expected to fail on 32-bit architectures
+
 * Mon Aug 31 2020 Nikola Forró <nforro@redhat.com> - 1.5.2-1
 - New upstream release 1.5.2
   resolves: #1853871 and #1840077
