@@ -1,0 +1,30 @@
+From b4da1455615fd7dc6d3554d16008a1e88018fa4d Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Nikola=20Forr=C3=B3?= <nforro@redhat.com>
+Date: Wed, 30 Sep 2020 11:44:25 +0200
+Subject: [PATCH] TST: skip test_nnz_overflow on 32-bit architectures
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+On a 32-bit architecture, in case check_free_memory() passes, the first
+np.zeros() fails with "ValueError: Maximum allowed dimension exceeded",
+which I believe is expected.
+
+Signed-off-by: Nikola Forró <nforro@redhat.com>
+---
+ scipy/sparse/tests/test_sparsetools.py | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/scipy/sparse/tests/test_sparsetools.py b/scipy/sparse/tests/test_sparsetools.py
+index 0c208ef4451..19c7de43fa1 100644
+--- a/scipy/sparse/tests/test_sparsetools.py
++++ b/scipy/sparse/tests/test_sparsetools.py
+@@ -61,6 +61,8 @@ def test_regression_std_vector_dtypes():
+ 
+ 
+ @pytest.mark.slow
++@pytest.mark.skipif(not (sys.platform.startswith('linux') and np.dtype(np.intp).itemsize >= 8),
++                    reason="test requires 64-bit Linux")
+ def test_nnz_overflow():
+     # Regression test for gh-7230 / gh-7871, checking that coo_todense
+     # with nnz > int32max doesn't overflow.

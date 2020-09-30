@@ -14,8 +14,8 @@
 
 Summary:    Scientific Tools for Python
 Name:       scipy
-Version:    1.5.0
-Release:    4%{?dist}
+Version:    1.5.2
+Release:    1%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -24,10 +24,8 @@ License:    BSD and Boost and Public Domain
 Url:        http://www.scipy.org/scipylib/index.html
 Source0:    https://github.com/scipy/scipy/releases/download/v%{version}/scipy-%{version}.tar.gz
 
-# Previously we ignored the tests results, because they don't always pass
-# Instead of ignoring the results entirely, we allow certain failure rate
-# https://stackoverflow.com/a/47731333/1839451
-Patch0:     acceptable_failure_rate.patch
+# https://github.com/scipy/scipy/pull/12899
+Patch0:     test_nnz_overflow.patch
 
 BuildRequires: fftw-devel, suitesparse-devel
 BuildRequires: %{blaslib}-devel
@@ -139,33 +137,24 @@ pathfix.py -pni "%{__python3} %{py3_shbang_opts}" %{buildroot}%{python3_sitearch
 # check against the reference BLAS/LAPACK
 export FLEXIBLAS=netlib
 
-# Skip all tests on s390x because they hangs unexpectedly and randomly
-# and pytest-timeout has no effect. Note that the outcome of the tests
-# was previously ignored anyway so by disabling the test for s390x we
-# are not doing anything more dangerous.
 %ifarch s390x
-exit 0
-%endif
-
-%ifarch x86_64
-export ACCEPTABLE_FAILURE_RATE=0
-%else
-# there are usually 10-21 test failing, so we allow 1% failure rate
-# XXX ppc fails 2%+, so we've extended this to 3% for now
-export ACCEPTABLE_FAILURE_RATE=3
-%endif
-
-%ifarch ppc64le
-# test_decomp segfaults on ppc64le
-export k="not test_denormals and not test_decomp"
-%else
-# test_denormals tends to stuck
-export k="not test_denormals"
+# skip failing tests on s390x for now
+export PYTEST_ADDOPTS="-k '\
+    not (TestNoData and test_nodata) and \
+    not test_fortranfile_read_mixed_record and \
+    not test_kde_1d and \
+    not test_kde_1d_weighted and \
+    not test_kde_2d and \
+    not test_kde_2d_weighted and \
+    not test_gaussian_kde_subclassing and \
+    not test_gaussian_kde_covariance_caching and \
+    not test_kde_integer_input and \
+    not test_pdf_logpdf and \
+    not test_pdf_logpdf_weighted'"
 %endif
 
 pushd %{buildroot}/%{python3_sitearch}
-# TODO TestIQR.test_scale fails on Python 3.8+ due to some warnings, investigate
-%{pytest} --timeout=500 -k "$k and not (TestIQR and test_scale)" scipy --numprocesses=auto
+%{pytest} --timeout=300 scipy --numprocesses=auto
 # Remove test remnants
 rm -rf gram{A,B}
 popd
@@ -182,6 +171,10 @@ popd
 %endif
 
 %changelog
+* Mon Aug 31 2020 Nikola Forró <nforro@redhat.com> - 1.5.2-1
+- New upstream release 1.5.2
+  resolves: #1853871 and #1840077
+
 * Sun Aug 16 2020 Iñaki Úcar <iucar@fedoraproject.org> - 1.5.0-4
 - https://fedoraproject.org/wiki/Changes/FlexiBLAS_as_BLAS/LAPACK_manager
 
