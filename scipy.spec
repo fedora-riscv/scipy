@@ -14,8 +14,8 @@
 
 Summary:    Scientific Tools for Python
 Name:       scipy
-Version:    1.5.2
-Release:    2%{?dist}
+Version:    1.5.3
+Release:    1%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -171,6 +171,10 @@ popd
 %endif
 
 %changelog
+* Mon Oct 19 2020 Nikola Forró <nforro@redhat.com> - 1.5.3-1
+- New upstream release 1.5.3
+  resolves: #1889132
+
 * Wed Sep 30 2020 Nikola Forró <nforro@redhat.com> - 1.5.2-2
 - Skip one more test expected to fail on 32-bit architectures
 
