@@ -14,7 +14,7 @@
 
 Summary:    Scientific Tools for Python
 Name:       scipy
-Version:    1.5.3
+Version:    1.5.4
 Release:    1%{?dist}
 
 # BSD -- whole package except:
@@ -154,7 +154,7 @@ export PYTEST_ADDOPTS="-k '\
 %endif
 
 pushd %{buildroot}/%{python3_sitearch}
-%{pytest} --timeout=300 scipy --numprocesses=auto
+%{pytest} --timeout=500 scipy --numprocesses=auto
 # Remove test remnants
 rm -rf gram{A,B}
 popd
@@ -171,6 +171,12 @@ popd
 %endif
 
 %changelog
+* Thu Nov 05 2020 Nikola Forró <nforro@redhat.com> - 1.5.4-1
+- New upstream release 1.5.4
+- Increase test timeout, 300 seconds is not always enough
+  for test_logpdf_overflow on s390x
+  resolves: #1894887
+
 * Mon Oct 19 2020 Nikola Forró <nforro@redhat.com> - 1.5.3-1
 - New upstream release 1.5.3
   resolves: #1889132
