@@ -15,7 +15,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.5.4
-Release:    1%{?dist}
+Release:    2%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -26,6 +26,8 @@ Source0:    https://github.com/scipy/scipy/releases/download/v%{version}/scipy-%
 
 # https://github.com/scipy/scipy/pull/12899
 Patch0:     skip-certain-tests-on-32-bit-arches.patch
+# https://github.com/scipy/scipy/pull/13130
+Patch1:     skip-factorial-float-tests-on-py310.patch
 
 BuildRequires: fftw-devel, suitesparse-devel
 BuildRequires: %{blaslib}-devel
@@ -171,6 +173,10 @@ popd
 %endif
 
 %changelog
+* Wed Nov 25 2020 Nikola Forró <nforro@redhat.com> - 1.5.4-2
+- Skip factorial() float tests on Python 3.10
+  resolves: #1898157
+
 * Thu Nov 05 2020 Nikola Forró <nforro@redhat.com> - 1.5.4-1
 - New upstream release 1.5.4
 - Increase test timeout, 300 seconds is not always enough
