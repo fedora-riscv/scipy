@@ -14,8 +14,8 @@
 
 Summary:    Scientific Tools for Python
 Name:       scipy
-Version:    1.5.4
-Release:    2%{?dist}
+Version:    1.6.0
+Release:    1%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -24,10 +24,8 @@ License:    BSD and Boost and Public Domain
 Url:        http://www.scipy.org/scipylib/index.html
 Source0:    https://github.com/scipy/scipy/releases/download/v%{version}/scipy-%{version}.tar.gz
 
-# https://github.com/scipy/scipy/pull/12899
-Patch0:     skip-certain-tests-on-32-bit-arches.patch
-# https://github.com/scipy/scipy/pull/13130
-Patch1:     skip-factorial-float-tests-on-py310.patch
+# https://github.com/scipy/scipy/pull/13387
+Patch0:     wavfile.patch
 
 BuildRequires: fftw-devel, suitesparse-devel
 BuildRequires: %{blaslib}-devel
@@ -173,6 +171,10 @@ popd
 %endif
 
 %changelog
+* Mon Jan 04 2021 Nikola Forró <nforro@redhat.com> - 1.6.0-1
+- New upstream release 1.6.0
+  resolves: #1906692
+
 * Wed Nov 25 2020 Nikola Forró <nforro@redhat.com> - 1.5.4-2
 - Skip factorial() float tests on Python 3.10
   resolves: #1898157
