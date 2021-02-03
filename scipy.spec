@@ -15,7 +15,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.6.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -137,6 +137,9 @@ pathfix.py -pni "%{__python3} %{py3_shbang_opts}" %{buildroot}%{python3_sitearch
 # check against the reference BLAS/LAPACK
 export FLEXIBLAS=netlib
 
+# default test timeout
+TIMEOUT=500
+
 %ifarch s390x
 # skip failing tests on s390x for now
 export PYTEST_ADDOPTS="-k '\
@@ -151,10 +154,13 @@ export PYTEST_ADDOPTS="-k '\
     not test_kde_integer_input and \
     not test_pdf_logpdf and \
     not test_pdf_logpdf_weighted'"
+
+# some tests (namely test_logpdf_overflow) tend to run for a long time on s390x
+TIMEOUT=1000
 %endif
 
 pushd %{buildroot}/%{python3_sitearch}
-%{pytest} --timeout=500 scipy --numprocesses=auto
+%{pytest} --timeout=${TIMEOUT} scipy --numprocesses=auto
 # Remove test remnants
 rm -rf gram{A,B}
 popd
@@ -171,6 +177,9 @@ popd
 %endif
 
 %changelog
+* Wed Feb 03 2021 Nikola Forró <nforro@redhat.com> - 1.6.0-3
+- Increase test timeout on s390x
+
 * Wed Jan 27 2021 Fedora Release Engineering <releng@fedoraproject.org> - 1.6.0-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
 
