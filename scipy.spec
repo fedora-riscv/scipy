@@ -14,8 +14,8 @@
 
 Summary:    Scientific Tools for Python
 Name:       scipy
-Version:    1.6.0
-Release:    3%{?dist}
+Version:    1.6.1
+Release:    1%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -23,9 +23,6 @@ Release:    3%{?dist}
 License:    BSD and Boost and Public Domain
 Url:        http://www.scipy.org/scipylib/index.html
 Source0:    https://github.com/scipy/scipy/releases/download/v%{version}/scipy-%{version}.tar.gz
-
-# https://github.com/scipy/scipy/pull/13387
-Patch0:     wavfile.patch
 
 BuildRequires: fftw-devel, suitesparse-devel
 BuildRequires: %{blaslib}-devel
@@ -177,6 +174,10 @@ popd
 %endif
 
 %changelog
+* Thu Feb 18 2021 Nikola Forró <nforro@redhat.com> - 1.6.1-1
+- New upstream release 1.6.1
+  resolves: #1929994
+
 * Wed Feb 03 2021 Nikola Forró <nforro@redhat.com> - 1.6.0-3
 - Increase test timeout on s390x
 
