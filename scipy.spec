@@ -14,7 +14,7 @@
 
 Summary:    Scientific Tools for Python
 Name:       scipy
-Version:    1.6.1
+Version:    1.6.2
 Release:    1%{?dist}
 
 # BSD -- whole package except:
@@ -125,6 +125,25 @@ for PY in %{python3_version}; do
   %endif
 done
 
+# FIXME: shared objects built from Fortran sources contain RPATH, find a way to prevent that
+# scipy/integrate/_odepack
+# scipy/integrate/_quadpack
+# scipy/integrate/_test_odeint_banded
+# scipy/integrate/lsoda
+# scipy/integrate/vode
+# scipy/linalg/_fblas
+# scipy/linalg/_flapack
+# scipy/linalg/_flinalg
+# scipy/linalg/_interpolative
+# scipy/linalg/cython_blas
+# scipy/linalg/cython_lapack
+# scipy/odr/__odrpack
+# scipy/optimize/_lbfgsb
+# scipy/sparse/linalg/eigen/arpack/_arpack
+# scipy/sparse/linalg/isolve/_iterative
+# scipy/special/_ufuncs
+# scipy/special/cython_special
+
 %install
 %py3_install
 # Some files got ambiguous python shebangs, we fix them after everything else is done
@@ -174,6 +193,10 @@ popd
 %endif
 
 %changelog
+* Thu Mar 25 2021 Nikola Forró <nforro@redhat.com> - 1.6.2-1
+- New upstream release 1.6.2
+  resolves: #1942896
+
 * Thu Feb 18 2021 Nikola Forró <nforro@redhat.com> - 1.6.1-1
 - New upstream release 1.6.1
   resolves: #1929994
