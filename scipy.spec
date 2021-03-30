@@ -15,7 +15,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.6.2
-Release:    1%{?dist}
+Release:    2%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -193,6 +193,9 @@ popd
 %endif
 
 %changelog
+* Tue Mar 30 2021 Jonathan Wakely <jwakely@redhat.com> - 1.6.2-2
+- Rebuilt for removed libstdc++ symbol (#1937698)
+
 * Thu Mar 25 2021 Nikola Forró <nforro@redhat.com> - 1.6.2-1
 - New upstream release 1.6.2
   resolves: #1942896
