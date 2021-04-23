@@ -15,7 +15,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.6.2
-Release:    2%{?dist}
+Release:    3%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -109,8 +109,6 @@ for PY in %{python3_version}; do
   %else
       FFLAGS="$RPM_OPT_FLAGS -fPIC" \
   %endif
-    OPENBLAS=%{_libdir} \
-    FFTW=%{_libdir} BLAS=%{_libdir} LAPACK=%{_libdir} \
     %{_bindir}/python$PY setup.py config_fc \
     --fcompiler=gnu95 --noarch \
     build
@@ -124,25 +122,6 @@ for PY in %{python3_version}; do
   popd
   %endif
 done
-
-# FIXME: shared objects built from Fortran sources contain RPATH, find a way to prevent that
-# scipy/integrate/_odepack
-# scipy/integrate/_quadpack
-# scipy/integrate/_test_odeint_banded
-# scipy/integrate/lsoda
-# scipy/integrate/vode
-# scipy/linalg/_fblas
-# scipy/linalg/_flapack
-# scipy/linalg/_flinalg
-# scipy/linalg/_interpolative
-# scipy/linalg/cython_blas
-# scipy/linalg/cython_lapack
-# scipy/odr/__odrpack
-# scipy/optimize/_lbfgsb
-# scipy/sparse/linalg/eigen/arpack/_arpack
-# scipy/sparse/linalg/isolve/_iterative
-# scipy/special/_ufuncs
-# scipy/special/cython_special
 
 %install
 %py3_install
@@ -193,6 +172,9 @@ popd
 %endif
 
 %changelog
+* Fri Apr 23 2021 Nikola Forró <nforro@redhat.com> - 1.6.2-3
+- Remove RPATH from certain shared object files
+
 * Tue Mar 30 2021 Jonathan Wakely <jwakely@redhat.com> - 1.6.2-2
 - Rebuilt for removed libstdc++ symbol (#1937698)
 
