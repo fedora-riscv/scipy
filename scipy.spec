@@ -148,17 +148,29 @@ export PYTEST_ADDOPTS="-k '\
     not test_gaussian_kde_covariance_caching and \
     not test_kde_integer_input and \
     not test_pdf_logpdf and \
-    not test_pdf_logpdf_weighted'"
+    not test_pdf_logpdf_weighted and \
+    not test_solve_discrete_are'"
 
 # some tests (namely test_logpdf_overflow) tend to run for a long time on s390x
 TIMEOUT=1000
 %endif
+
+%ifarch aarch64
+# https://bugzilla.redhat.com/show_bug.cgi?id=1959353
+export PYTEST_ADDOPTS="-k 'not test_solve_discrete_are'"
+%endif
+
+# tests on ppc64le are temporarily disabled as they segfault a lot:
+# https://bugzilla.redhat.com/show_bug.cgi?id=1959353
+%ifnarch ppc64le
 
 pushd %{buildroot}/%{python3_sitearch}
 %{pytest} --timeout=${TIMEOUT} scipy --numprocesses=auto
 # Remove test remnants
 rm -rf gram{A,B}
 popd
+
+%endif
 
 %files -n python3-scipy
 %doc LICENSE.txt
