@@ -15,7 +15,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.6.2
-Release:    3%{?dist}
+Release:    4%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -184,6 +184,9 @@ popd
 %endif
 
 %changelog
+* Fri Jun 04 2021 Python Maint <python-maint@redhat.com> - 1.6.2-4
+- Rebuilt for Python 3.10
+
 * Fri Apr 23 2021 Nikola Forró <nforro@redhat.com> - 1.6.2-3
 - Remove RPATH from certain shared object files
 
