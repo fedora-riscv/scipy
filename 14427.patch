@@ -1,0 +1,38 @@
+From c19bf22ce8d8cc2be8ce7950ffb93429ddc49e78 Mon Sep 17 00:00:00 2001
+From: serge-sans-paille <serge.guelton@telecom-bretagne.eu>
+Date: Sun, 18 Jul 2021 11:14:29 +0200
+Subject: [PATCH] Extra pythran annotation for i686 support
+
+Bug spotted on Fedora, see https://src.fedoraproject.org/rpms/scipy/pull-request/22
+
+The `int[::]` annotation is used to accept non-contiguous views.
+---
+ scipy/optimize/_group_columns.py   | 2 ++
+ scipy/signal/_max_len_seq_inner.py | 1 +
+ 2 files changed, 3 insertions(+)
+
+diff --git a/scipy/optimize/_group_columns.py b/scipy/optimize/_group_columns.py
+index d5dd9e1e48a1..8b4fcee34e7b 100644
+--- a/scipy/optimize/_group_columns.py
++++ b/scipy/optimize/_group_columns.py
+@@ -54,6 +54,8 @@ def group_dense(m, n, A):
+ 
+ #pythran export group_sparse(int, int, intc[], intc[])
+ #pythran export group_sparse(int, int, int[], int[])
++#pythran export group_sparse(int, int, intc[::], intc[::])
++#pythran export group_sparse(int, int, int[::], int[::])
+ def group_sparse(m, n, indices, indptr):
+     groups = -np.ones(n, dtype=np.intp)
+     current_group = 0
+diff --git a/scipy/signal/_max_len_seq_inner.py b/scipy/signal/_max_len_seq_inner.py
+index fe57499af329..88d6ef3d7557 100644
+--- a/scipy/signal/_max_len_seq_inner.py
++++ b/scipy/signal/_max_len_seq_inner.py
+@@ -4,6 +4,7 @@
+ import numpy as np
+ 
+ #pythran export _max_len_seq_inner(intp[], int8[], int, int, int8[])
++#pythran export _max_len_seq_inner(int[], int8[], int, int, int8[])
+ 
+ # Fast inner loop of max_len_seq.
+ def _max_len_seq_inner(taps, state, nbits, length, seq):

@@ -4,7 +4,7 @@
 # Pythran is an optional build dependency.
 # When used, it makes some modules faster,
 # but it is usually not available soon enough for new major Python versions.
-%bcond_with pythran
+%bcond_without pythran
 
 # Set to pre-release version suffix if building pre-release, else %%{nil}
 %global rcver %{nil}
@@ -28,6 +28,9 @@ Release:    2%{?dist}
 License:    BSD and Boost and Public Domain
 Url:        http://www.scipy.org/scipylib/index.html
 Source0:    https://github.com/scipy/scipy/releases/download/v%{version}/scipy-%{version}.tar.gz
+
+# Fix Pythran modules on 32bit arches, merged upstream
+Patch1:     https://github.com/scipy/scipy/pull/14427.patch
 
 BuildRequires: fftw-devel, suitesparse-devel
 BuildRequires: %{blaslib}-devel
