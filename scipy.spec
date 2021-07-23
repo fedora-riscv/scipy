@@ -20,7 +20,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.7.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -201,6 +201,9 @@ popd
 %endif
 
 %changelog
+* Fri Jul 23 2021 Fedora Release Engineering <releng@fedoraproject.org> - 1.7.0-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
+
 * Wed Jul 14 2021 Miro Hrončok <mhroncok@redhat.com> - 1.7.0-2
 - Use the optional Pythran build dependency
 
