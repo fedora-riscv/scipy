@@ -4,7 +4,12 @@
 # Pythran is an optional build dependency.
 # When used, it makes some modules faster,
 # but it is usually not available soon enough for new major Python versions.
+%ifarch i686 || armv7hl
+# It seems pythran is broken on 32-bit arches, disable it
+%bcond_with pythran
+%else
 %bcond_without pythran
+%endif
 
 # Set to pre-release version suffix if building pre-release, else %%{nil}
 %global rcver %{nil}
@@ -19,7 +24,7 @@
 
 Summary:    Scientific Tools for Python
 Name:       scipy
-Version:    1.7.3
+Version:    1.8.0
 Release:    1%{?dist}
 
 # BSD -- whole package except:
@@ -29,8 +34,8 @@ License:    BSD and Boost and Public Domain
 Url:        http://www.scipy.org/scipylib/index.html
 Source0:    https://github.com/scipy/scipy/releases/download/v%{version}/scipy-%{version}.tar.gz
 
-# Fix Pythran modules on 32bit arches, merged upstream
-Patch1:     https://github.com/scipy/scipy/pull/14427.patch
+# https://github.com/scipy/scipy/pull/15306
+Patch0:     skip-build.patch
 
 BuildRequires: fftw-devel, suitesparse-devel
 BuildRequires: %{blaslib}-devel
@@ -161,16 +166,6 @@ export PYTEST_ADDOPTS="-k 'not TestSchur'"
 # skip failing tests on s390x for now
 export PYTEST_ADDOPTS="-k 'not TestSchur and \
     not (TestNoData and test_nodata) and \
-    not test_fortranfile_read_mixed_record and \
-    not test_kde_1d and \
-    not test_kde_1d_weighted and \
-    not test_kde_2d and \
-    not test_kde_2d_weighted and \
-    not test_gaussian_kde_subclassing and \
-    not test_gaussian_kde_covariance_caching and \
-    not test_kde_integer_input and \
-    not test_pdf_logpdf and \
-    not test_pdf_logpdf_weighted and \
     not test_solve_discrete_are'"
 
 # some tests (namely test_logpdf_overflow) tend to run for a long time on s390x
@@ -211,6 +206,10 @@ popd
 %endif
 
 %changelog
+* Mon Feb 07 2022 Nikola Forró <nforro@redhat.com> - 1.8.0-1
+- New upstream release 1.8.0
+  resolves: #2035126
+
 * Tue Dec 21 2021 Nikola Forró <nforro@redhat.com> - 1.7.3-1
 - New upstream release 1.7.3
   resolves: #1988883
