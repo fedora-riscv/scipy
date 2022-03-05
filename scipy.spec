@@ -4,7 +4,12 @@
 # Pythran is an optional build dependency.
 # When used, it makes some modules faster,
 # but it is usually not available soon enough for new major Python versions.
+%ifarch i686
+# It seems pythran is broken on i686, disable it
+%bcond_with pythran
+%else
 %bcond_without pythran
+%endif
 
 # Set to pre-release version suffix if building pre-release, else %%{nil}
 %global rcver %{nil}
@@ -19,8 +24,8 @@
 
 Summary:    Scientific Tools for Python
 Name:       scipy
-Version:    1.7.3
-Release:    2%{?dist}
+Version:    1.8.0
+Release:    1%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -29,8 +34,8 @@ License:    BSD and Boost and Public Domain
 Url:        http://www.scipy.org/scipylib/index.html
 Source0:    https://github.com/scipy/scipy/releases/download/v%{version}/scipy-%{version}.tar.gz
 
-# Fix Pythran modules on 32bit arches, merged upstream
-Patch1:     https://github.com/scipy/scipy/pull/14427.patch
+# https://github.com/scipy/scipy/pull/15306
+Patch0:     skip-build.patch
 
 BuildRequires: fftw-devel, suitesparse-devel
 BuildRequires: %{blaslib}-devel
@@ -123,7 +128,12 @@ for PY in %{python3_version}; do
   %else
       FFLAGS="$RPM_OPT_FLAGS -fPIC" \
   %endif
-    LDFLAGS="%{__global_ldflags}" \
+  %ifarch x86_64
+      # workaround for https://bugzilla.redhat.com/show_bug.cgi?id=2068530
+      LDFLAGS="%{__global_ldflags} -Wl,--no-as-needed -lmvec -Wl,--as-needed" \
+  %else
+      LDFLAGS="%{__global_ldflags}" \
+  %endif
     %{_bindir}/python$PY setup.py config_fc \
     --fcompiler=gnu95 --noarch \
     build
@@ -161,16 +171,6 @@ export PYTEST_ADDOPTS="-k 'not TestSchur'"
 # skip failing tests on s390x for now
 export PYTEST_ADDOPTS="-k 'not TestSchur and \
     not (TestNoData and test_nodata) and \
-    not test_fortranfile_read_mixed_record and \
-    not test_kde_1d and \
-    not test_kde_1d_weighted and \
-    not test_kde_2d and \
-    not test_kde_2d_weighted and \
-    not test_gaussian_kde_subclassing and \
-    not test_gaussian_kde_covariance_caching and \
-    not test_kde_integer_input and \
-    not test_pdf_logpdf and \
-    not test_pdf_logpdf_weighted and \
     not test_solve_discrete_are'"
 
 # some tests (namely test_logpdf_overflow) tend to run for a long time on s390x
@@ -182,9 +182,14 @@ TIMEOUT=1000
 export PYTEST_ADDOPTS="-k 'not TestSchur and not test_solve_discrete_are'"
 %endif
 
-%ifarch i686 || x86_64 || armv7hl
+%ifarch x86_64 || armv7hl
 # skip also failing test_sygst for now
 export PYTEST_ADDOPTS="-k 'not TestSchur and not test_sygst'"
+%endif
+
+%ifarch i686
+# skip also test_cython_api: https://bugzilla.redhat.com/show_bug.cgi?id=2068496
+export PYTEST_ADDOPTS="-k 'not TestSchur and not test_sygst and not test_cython_api'"
 %endif
 
 # tests on ppc64le are temporarily disabled as they segfault a lot:
@@ -211,6 +216,10 @@ popd
 %endif
 
 %changelog
+* Mon Feb 07 2022 Nikola Forró <nforro@redhat.com> - 1.8.0-1
+- New upstream release 1.8.0
+  resolves: #2035126
+
 * Sat Jan 22 2022 Fedora Release Engineering <releng@fedoraproject.org> - 1.7.3-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
 
