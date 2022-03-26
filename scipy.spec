@@ -25,7 +25,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.8.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -182,12 +182,12 @@ TIMEOUT=1000
 export PYTEST_ADDOPTS="-k 'not TestSchur and not test_solve_discrete_are'"
 %endif
 
-%ifarch x86_64 || armv7hl
+%ifarch x86_64
 # skip also failing test_sygst for now
 export PYTEST_ADDOPTS="-k 'not TestSchur and not test_sygst'"
 %endif
 
-%ifarch i686
+%ifarch i686 || armv7hl
 # skip also test_cython_api: https://bugzilla.redhat.com/show_bug.cgi?id=2068496
 export PYTEST_ADDOPTS="-k 'not TestSchur and not test_sygst and not test_cython_api'"
 %endif
@@ -216,6 +216,9 @@ popd
 %endif
 
 %changelog
+* Sat Mar 26 2022 Nikola Forró <nforro@redhat.com> - 1.8.0-3
+- Skip test_cython_api also on armv7hl
+
 * Sat Mar 26 2022 Nikola Forró <nforro@redhat.com> - 1.8.0-2
 - Disable pythran on armv7hl as well
 
