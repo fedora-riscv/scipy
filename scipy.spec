@@ -4,8 +4,8 @@
 # Pythran is an optional build dependency.
 # When used, it makes some modules faster,
 # but it is usually not available soon enough for new major Python versions.
-%ifarch i686
-# It seems pythran is broken on i686, disable it
+%ifarch i686 || armv7hl
+# It seems pythran is broken on 32-bit arches, disable it
 %bcond_with pythran
 %else
 %bcond_without pythran
@@ -25,7 +25,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.8.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -216,6 +216,9 @@ popd
 %endif
 
 %changelog
+* Sat Mar 26 2022 Nikola Forró <nforro@redhat.com> - 1.8.0-2
+- Disable pythran on armv7hl as well
+
 * Mon Feb 07 2022 Nikola Forró <nforro@redhat.com> - 1.8.0-1
 - New upstream release 1.8.0
   resolves: #2035126
