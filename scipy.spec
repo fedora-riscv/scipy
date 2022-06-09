@@ -24,8 +24,8 @@
 
 Summary:    Scientific Tools for Python
 Name:       scipy
-Version:    1.8.0
-Release:    3%{?dist}
+Version:    1.8.1
+Release:    1%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -33,9 +33,6 @@ Release:    3%{?dist}
 License:    BSD and Boost and Public Domain
 Url:        http://www.scipy.org/scipylib/index.html
 Source0:    https://github.com/scipy/scipy/releases/download/v%{version}/scipy-%{version}.tar.gz
-
-# https://github.com/scipy/scipy/pull/15306
-Patch0:     skip-build.patch
 
 BuildRequires: fftw-devel, suitesparse-devel
 BuildRequires: %{blaslib}-devel
@@ -177,7 +174,7 @@ export PYTEST_ADDOPTS="-k 'not TestSchur and \
 TIMEOUT=1000
 %endif
 
-%ifarch aarch64
+%ifarch aarch64 || ppc64le
 # https://bugzilla.redhat.com/show_bug.cgi?id=1959353
 export PYTEST_ADDOPTS="-k 'not TestSchur and not test_solve_discrete_are'"
 %endif
@@ -192,17 +189,11 @@ export PYTEST_ADDOPTS="-k 'not TestSchur and not test_sygst'"
 export PYTEST_ADDOPTS="-k 'not TestSchur and not test_sygst and not test_cython_api'"
 %endif
 
-# tests on ppc64le are temporarily disabled as they segfault a lot:
-# https://bugzilla.redhat.com/show_bug.cgi?id=1959353
-%ifnarch ppc64le
-
 pushd %{buildroot}/%{python3_sitearch}
 %{pytest} --timeout=${TIMEOUT} scipy --numprocesses=auto
 # Remove test remnants
 rm -rf gram{A,B}
 popd
-
-%endif
 
 %files -n python3-scipy
 %doc LICENSE.txt
@@ -216,6 +207,10 @@ popd
 %endif
 
 %changelog
+* Thu Jun 09 2022 Nikola Forró <nforro@redhat.com> - 1.8.1-1
+- New upstream release 1.8.1
+  resolves: #2088437
+
 * Sat Mar 26 2022 Nikola Forró <nforro@redhat.com> - 1.8.0-3
 - Skip test_cython_api also on armv7hl
 
