@@ -179,6 +179,7 @@ TIMEOUT=1000
 %ifarch aarch64 || ppc64le
 # https://bugzilla.redhat.com/show_bug.cgi?id=1959353
 export PYTEST_ADDOPTS="-k 'not TestSchur and not test_solve_discrete_are'"
+TIMEOUT=1000
 %endif
 
 %ifarch x86_64
