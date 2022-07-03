@@ -25,7 +25,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.8.1
-Release:    4%{?dist}
+Release:    5%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -33,6 +33,10 @@ Release:    4%{?dist}
 License:    BSD and Boost and Public Domain
 Url:        http://www.scipy.org/scipylib/index.html
 Source0:    https://github.com/scipy/scipy/releases/download/v%{version}/scipy-%{version}.tar.gz
+# https://bugzilla.redhat.com/show_bug.cgi?id=2099102
+# https://github.com/scipy/scipy/issues/16527
+# https://github.com/scipy/scipy/pull/16528
+Patch0:     scipy-1.8.1-syevr-operator-order-explicit.patch
 
 BuildRequires: fftw-devel, suitesparse-devel
 BuildRequires: %{blaslib}-devel
@@ -208,6 +212,9 @@ popd
 %endif
 
 %changelog
+* Sun Jul  3 2022 Mamoru TASAKA <mtasaka@fedoraproject.org> - 1.8.1-5
+- Fix linalg.lapack syevr segfault (#2099102)
+
 * Fri Jun 17 2022 Python Maint <python-maint@redhat.com> - 1.8.1-4
 - Rebuilt for Python 3.11
 
