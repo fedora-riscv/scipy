@@ -25,7 +25,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.8.1
-Release:    5%{?dist}
+Release:    6%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -212,6 +212,9 @@ popd
 %endif
 
 %changelog
+* Sat Jul 23 2022 Fedora Release Engineering <releng@fedoraproject.org> - 1.8.1-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild
+
 * Sun Jul  3 2022 Mamoru TASAKA <mtasaka@fedoraproject.org> - 1.8.1-5
 - Fix linalg.lapack syevr segfault (#2099102)
 
