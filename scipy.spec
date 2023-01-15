@@ -4,7 +4,7 @@
 # Pythran is an optional build dependency.
 # When used, it makes some modules faster,
 # but it is usually not available soon enough for new major Python versions.
-%ifarch i686 || armv7hl
+%ifarch i686 || armv7hl || riscv64
 # It seems pythran is broken on 32-bit arches, disable it
 %bcond_with pythran
 %else
@@ -25,7 +25,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.8.1
-Release:    6%{?dist}
+Release:    6~bootstrap%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -212,6 +212,9 @@ popd
 %endif
 
 %changelog
+* Jan 16 2023 Liu Yang <Yang.Liu.sn@gmail.com> - 1.8.1-6~bootstrap
+- Bootstrap scipy without pythran on riscv64 for python3.11.
+
 * Sat Jul 23 2022 Fedora Release Engineering <releng@fedoraproject.org> - 1.8.1-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild
 
