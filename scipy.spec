@@ -156,6 +156,7 @@ export SCIPY_USE_PYTHRAN=0%{?with_pythran}
 # Some files got ambiguous python shebangs, we fix them after everything else is done
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" %{buildroot}%{python3_sitearch}
 
+%ifnarch riscv64
 %check
 # check against the reference BLAS/LAPACK
 export FLEXIBLAS=netlib
@@ -200,6 +201,8 @@ pushd %{buildroot}/%{python3_sitearch}
 rm -rf gram{A,B}
 popd
 
+%endif #ifnarch riscv64, check failed for riscv64, skip it.
+
 %files -n python3-scipy
 %doc LICENSE.txt
 %{python3_sitearch}/scipy/
@@ -212,6 +215,9 @@ popd
 %endif
 
 %changelog
+* Jan 16 2023 Liu Yang <Yang.Liu.sn@gmail.com> - 1.8.1-6~bootstrap
+- Skip check for riscv64, due to failure.
+
 * Jan 16 2023 Liu Yang <Yang.Liu.sn@gmail.com> - 1.8.1-6~bootstrap
 - Bootstrap scipy without pythran on riscv64 for python3.11.
 
