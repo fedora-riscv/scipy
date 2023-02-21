@@ -24,7 +24,7 @@
 
 Summary:    Scientific Tools for Python
 Name:       scipy
-Version:    1.10.0
+Version:    1.10.1
 Release:    1%{?dist}
 
 # BSD -- whole package except:
@@ -231,8 +231,8 @@ popd
 %endif
 
 %changelog
-* Wed Jan 25 2023 Pavel Šimovec <psimovec@redhat.com> - 1.10.0-1
-- New upstream release 1.10.0
+* Wed Feb 21 2023 Pavel Šimovec <psimovec@redhat.com> - 1.10.1-1
+- New upstream release 1.10.1
   resolves: #2101172
 - Use the optional python3-pooch dependency
 
