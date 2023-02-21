@@ -4,7 +4,7 @@
 # Pythran is an optional build dependency.
 # When used, it makes some modules faster,
 # but it is usually not available soon enough for new major Python versions.
-%ifarch i686 || armv7hl
+%ifarch i686 armv7hl
 # It seems pythran is broken on 32-bit arches, disable it
 %bcond_with pythran
 %else
@@ -167,7 +167,7 @@ not test_banded_ode_solvers and \
 not test_examples[True-complex64]"
 export PYTEST_ADDOPTS="-k '$SKIP_ALL'"
 # TestConstructUtils::test_concatenate_int32_overflow is flaky on aarch64
-%ifarch aarch64 || ppc64le
+%ifarch aarch64 ppc64le
 # https://bugzilla.redhat.com/show_bug.cgi?id=1959353
 export PYTEST_ADDOPTS="-k '$SKIP_ALL and \
 not test_solve_discrete_are and \
@@ -197,7 +197,7 @@ export PYTEST_ADDOPTS="-k '$SKIP_ALL and \
 not test_sygst'"
 %endif
 
-%ifarch i686 || armv7hl
+%ifarch i686 armv7hl
 # skip also test_cython_api: https://bugzilla.redhat.com/show_bug.cgi?id=2068496
 # https://github.com/scipy/scipy/issues/17213
 export PYTEST_ADDOPTS="-k '$SKIP_ALL and \
