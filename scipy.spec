@@ -1,3 +1,11 @@
+# Bootstrap for Fedora riscv64
+%bcond_without bootstrap
+
+%if %{with bootstrap}
+%global _without_pythran 1
+%global _without_doc 1
+%endif
+
 # without means enabled
 %bcond_with doc
 
@@ -235,6 +243,9 @@ popd
 %endif
 
 %changelog
+* Wed Apr 26 2023 Liu Yang <Yang.Liu.sn@gmail.com> - 1.10.1-1.rv64~bootstrap
+- Bootstrap for Fedora riscv64.
+
 * Thu Apr 27 2023 Liu Yang <Yang.Liu.sn@gmail.com> - 1.10.1-1.rv64
 - Skip tests failed on riscv64.
 
