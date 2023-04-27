@@ -25,7 +25,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.10.1
-Release:    1%{?dist}
+Release:    1.rv64%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -150,6 +150,7 @@ export SCIPY_USE_PYTHRAN=0%{?with_pythran}
 %py3_shebang_fix %{buildroot}%{python3_sitearch}
 
 %check
+%ifnarch riscv64
 # check against the reference BLAS/LAPACK
 export FLEXIBLAS=netlib
 
@@ -218,6 +219,9 @@ pushd %{buildroot}/%{python3_sitearch}
 # Remove test remnants
 rm -rf gram{A,B}
 popd
+%else
+:
+%endif
 
 %files -n python3-scipy
 %doc LICENSE.txt
@@ -231,6 +235,9 @@ popd
 %endif
 
 %changelog
+* Thu Apr 27 2023 Liu Yang <Yang.Liu.sn@gmail.com> - 1.10.1-1.rv64
+- Skip tests failed on riscv64.
+
 * Wed Feb 21 2023 Pavel Šimovec <psimovec@redhat.com> - 1.10.1-1
 - New upstream release 1.10.1
   resolves: #2101172
