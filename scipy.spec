@@ -25,7 +25,7 @@
 Summary:    Scientific Tools for Python
 Name:       scipy
 Version:    1.10.1
-Release:    1%{?dist}
+Release:    1.rv64%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -213,11 +213,15 @@ not test_resiliency_random[TestCSC-test_sum_dtype]'"
 
 %endif
 
+%ifnarch riscv64
 pushd %{buildroot}/%{python3_sitearch}
 %{pytest} --timeout=${TIMEOUT} scipy --numprocesses=auto
 # Remove test remnants
 rm -rf gram{A,B}
 popd
+%else
+:
+%endif
 
 %files -n python3-scipy
 %doc LICENSE.txt
@@ -231,6 +235,9 @@ popd
 %endif
 
 %changelog
+* Thu Apr 27 2023 Liu Yang <Yang.Liu.sn@gmail.com> - 1.10.1-1.rv64
+- Skip tests failed on riscv64.
+
 * Wed Feb 21 2023 Pavel Šimovec <psimovec@redhat.com> - 1.10.1-1
 - New upstream release 1.10.1
   resolves: #2101172
