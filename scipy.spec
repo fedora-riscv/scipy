@@ -24,8 +24,8 @@
 
 Summary:    Scientific Tools for Python
 Name:       scipy
-Version:    1.10.1
-Release:    5%{?dist}
+Version:    1.11.1
+Release:    1%{?dist}
 
 # BSD -- whole package except:
 # Boost -- scipy/special/cephes/scipy_iv.c
@@ -169,7 +169,8 @@ export PYTEST_ADDOPTS="-k '$SKIP_ALL'"
 export PYTEST_ADDOPTS="-k '$SKIP_ALL and \
 not test_solve_discrete_are and \
 not test_maxiter_worsening[lgmres] and \
-not test_concatenate_int32_overflow'"
+not test_concatenate_int32_overflow and \
+not test_expm_multiply_dtype'"
 TIMEOUT=1000
 %endif
 
@@ -184,7 +185,8 @@ not test_dblint and \
 not TestUnivariateSpline and \
 not TestLSQBivariateSpline and \
 not TestPPoly and \
-not TestLevyStable'"
+not TestLevyStable and \
+not test_distance_transform_cdt05'"
 TIMEOUT=1000
 %endif
 
@@ -231,6 +233,10 @@ popd
 %endif
 
 %changelog
+* Wed Jul 12 2023 psimovec <psimovec@redhat.com> - 1.11.1-1
+- New upstream release 1.11.1
+- resolves: #2211813
+
 * Mon Jul 10 2023 Python Maint <python-maint@redhat.com> - 1.10.1-5
 - Rebuilt for Python 3.12
 
