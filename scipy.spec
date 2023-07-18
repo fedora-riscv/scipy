@@ -76,7 +76,7 @@ leading scientists and engineers.}
 
 %package -n python3-scipy
 Summary:    Scientific Tools for Python
-Requires:   python3-numpy, python3-f2py
+Requires:   python3-numpy, python3-f2py, python3-pooch
 %{?python_provide:%python_provide python3-scipy}
 %description -n python3-scipy %_description
 
@@ -88,6 +88,12 @@ Requires:   python3-scipy = %{version}-%{release}
 HTML documentation for Scipy
 %endif
 
+%package -n python3-scipy-tests
+Summary:    Scientific Tools for Python - test files
+Requires:   python3-scipy = %{version}-%{release}
+Requires:   python3-pytest
+%description -n python3-scipy-tests
+Scipy test files
 
 %prep
 %autosetup -p1 -n %{name}-%{version}%{?rcver}
@@ -219,12 +225,23 @@ pushd %{buildroot}/%{python3_sitearch}
 %{pytest} --timeout=${TIMEOUT} scipy %{?!rhel:--numprocesses=auto}
 # Remove test remnants
 rm -rf gram{A,B}
+rm -rf scipy/.pytest_cache
 popd
 
 %files -n python3-scipy
 %doc LICENSE.txt
 %{python3_sitearch}/scipy/
 %{python3_sitearch}/*.egg-info
+%exclude %{python3_sitearch}/scipy/*/tests/
+%exclude %{python3_sitearch}/scipy/*/*/tests/
+%exclude %{python3_sitearch}/scipy/*/*/*/tests/
+%exclude %{python3_sitearch}/scipy/*/*/*/*/tests/ 
+
+%files -n python3-scipy-tests
+%{python3_sitearch}/scipy/*/tests/
+%{python3_sitearch}/scipy/*/*/tests/
+%{python3_sitearch}/scipy/*/*/*/tests/
+%{python3_sitearch}/scipy/*/*/*/*/tests/
 
 %if %{with doc}
 %files -n python3-scipy-doc
@@ -235,7 +252,8 @@ popd
 %changelog
 * Wed Jul 12 2023 psimovec <psimovec@redhat.com> - 1.11.1-1
 - New upstream release 1.11.1
-- resolves: #2211813
+  resolves: #2211813
+- Separate tests into subpackage python3-scipy-tests
 
 * Mon Jul 10 2023 Python Maint <python-maint@redhat.com> - 1.10.1-5
 - Rebuilt for Python 3.12
