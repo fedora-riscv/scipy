@@ -1,0 +1,63 @@
+From 3c89445b6439f3ce7bffc4cf11c6407c39faedc5 Mon Sep 17 00:00:00 2001
+From: Matus Valo <matusvalo@users.noreply.github.com>
+Date: Thu, 6 Jul 2023 16:55:25 +0200
+Subject: [PATCH] BLD: copy `cython_optimize.pxd` to build dir (#18810)
+
+Closes gh-18792
+
+[skip cirrus] [skip circle]
+
+---------
+
+Co-authored-by: Ralf Gommers <ralf.gommers@gmail.com>
+---
+ scipy/optimize/cython_optimize.pxd         | 2 +-
+ scipy/optimize/cython_optimize/meson.build | 1 +
+ scipy/optimize/meson.build                 | 8 +++++++-
+ 3 files changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/scipy/optimize/cython_optimize.pxd b/scipy/optimize/cython_optimize.pxd
+index d5a0bdd758e0..d35f8da68b34 100644
+--- a/scipy/optimize/cython_optimize.pxd
++++ b/scipy/optimize/cython_optimize.pxd
+@@ -7,5 +7,5 @@
+ # support. Changing it causes an ABI forward-compatibility break
+ # (gh-11793), so we currently leave it as is (no further cimport
+ # statements should be used in this file).
+-from .cython_optimize._zeros cimport (
++from scipy.optimize.cython_optimize._zeros cimport (
+     brentq, brenth, ridder, bisect, zeros_full_output)
+diff --git a/scipy/optimize/cython_optimize/meson.build b/scipy/optimize/cython_optimize/meson.build
+index 359ea8418ba3..ee8def39b4d3 100644
+--- a/scipy/optimize/cython_optimize/meson.build
++++ b/scipy/optimize/cython_optimize/meson.build
+@@ -17,6 +17,7 @@ cy_opt_gen = generator(cython,
+   arguments : cython_args,
+   output : '@BASENAME@.c',
+   depends : [_cython_tree,
++    cython_optimize_pxd,
+     _dummy_init_optimize,
+     _dummy_init_cyoptimize])
+ 
+diff --git a/scipy/optimize/meson.build b/scipy/optimize/meson.build
+index 26458b05cd70..4c5ab798316b 100644
+--- a/scipy/optimize/meson.build
++++ b/scipy/optimize/meson.build
+@@ -206,10 +206,16 @@ endif
+ 
+ _dummy_init_optimize = fs.copyfile('__init__.py')
+ 
++# Copying this .pxd file is only needed because of a Cython bug, see
++# discussion on SciPy PR gh-18810.
++cython_optimize_pxd = [
++  fs.copyfile('cython_optimize.pxd'),
++]
++
+ opt_gen = generator(cython,
+   arguments : cython_args,
+   output : '@BASENAME@.c',
+-  depends : [_cython_tree, cython_blas_pxd, _dummy_init_optimize])
++  depends : [_cython_tree, cython_blas_pxd, cython_optimize_pxd, _dummy_init_optimize])
+ 
+ _bglu_dense_c = opt_gen.process('_bglu_dense.pyx')
+ 
